@@ -2,8 +2,17 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 
+interface BeforeInstallPromptEvent extends Event {
+  prompt: () => Promise<void>;
+  userChoice: Promise<{ outcome: 'accepted' | 'dismissed' }>;
+}
+
 export default function LoginPage() {
   const [loading, setLoading] = useState(false);
+  const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
+  const [showInstallButton, setShowInstallButton] = useState(false);
+  const [isIOS, setIsIOS] = useState(false);
+  const [isStandalone, setIsStandalone] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -21,7 +30,35 @@ export default function LoginPage() {
       }
     });
 
-    return () => subscription.unsubscribe();
+    // Detect iOS
+    const isIOSDevice = /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream;
+    setIsIOS(isIOSDevice);
+
+    // Check if already installed
+    const isStandaloneMode = window.matchMedia('(display-mode: standalone)').matches || 
+                            (window.navigator as any).standalone === true;
+    setIsStandalone(isStandaloneMode);
+
+    // PWA Install Prompt (Android/Chrome)
+    const handleBeforeInstallPrompt = (e: Event) => {
+      e.preventDefault();
+      setDeferredPrompt(e as BeforeInstallPromptEvent);
+      if (!isStandaloneMode) {
+        setShowInstallButton(true);
+      }
+    };
+
+    if (!isIOSDevice && !isStandaloneMode) {
+      window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+    } else if (isIOSDevice && !isStandaloneMode) {
+      // iOS에서는 항상 안내 표시
+      setShowInstallButton(true);
+    }
+
+    return () => {
+      subscription.unsubscribe();
+      window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+    };
   }, [navigate]);
 
   const handleGoogleLogin = async () => {
@@ -40,13 +77,51 @@ export default function LoginPage() {
     }
   };
 
+  const handleInstallClick = async () => {
+    if (!deferredPrompt) return;
+
+    deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+    
+    if (outcome === 'accepted') {
+      setShowInstallButton(false);
+    }
+    setDeferredPrompt(null);
+  };
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
       <div className="max-w-md w-full bg-white rounded-2xl shadow-xl p-8">
         <div className="text-center mb-8">
           <h1 className="text-4xl font-bold text-gray-800 mb-2">ChoreMint</h1>
           <p className="text-gray-600">가족과 함께하는 할 일 관리</p>
         </div>
+
+        {/* PWA 설치 버튼 */}
+        {showInstallButton && !isStandalone && (
+          <div className="mb-4">
+            {isIOS ? (
+              <div className="bg-blue-50 border-2 border-blue-200 rounded-lg p-4">
+                <p className="text-sm text-blue-800 font-medium mb-2">📱 홈 화면에 추가</p>
+                <ol className="text-xs text-blue-700 space-y-1 list-decimal list-inside">
+                  <li>Safari 하단의 공유 버튼 <span className="font-bold">(□↑)</span> 클릭</li>
+                  <li>"홈 화면에 추가" 선택</li>
+                  <li>"추가" 버튼 클릭</li>
+                </ol>
+              </div>
+            ) : (
+              <button
+                onClick={handleInstallClick}
+                className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-orange-400 to-pink-400 text-white rounded-lg px-6 py-3 font-medium hover:from-orange-500 hover:to-pink-500 transition-colors shadow-lg"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                </svg>
+                앱 설치하기
+              </button>
+            )}
+          </div>
+        )}
         
         <button
           onClick={handleGoogleLogin}
