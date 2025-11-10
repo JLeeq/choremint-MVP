@@ -35,7 +35,7 @@ export default function ChildToday() {
   useEffect(() => {
     const session = localStorage.getItem('child_session');
     if (!session) {
-      navigate('/child-login');
+      navigate('/');
       return;
     }
 
@@ -50,7 +50,7 @@ export default function ChildToday() {
       // 자녀 로그인 시 푸시 알림 구독
       initializePushNotifications(parsedSession.childId, true);
     } catch (e) {
-      navigate('/child-login');
+      navigate('/');
       return;
     }
 

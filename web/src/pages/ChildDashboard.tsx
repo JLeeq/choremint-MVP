@@ -25,7 +25,7 @@ export default function ChildDashboard() {
     // Load child session
     const session = localStorage.getItem('child_session');
     if (!session) {
-      navigate('/child-login');
+      navigate('/');
       return;
     }
 
@@ -35,7 +35,7 @@ export default function ChildDashboard() {
       loadSubmissions(parsed.childId);
     } catch (e) {
       localStorage.removeItem('child_session');
-      navigate('/child-login');
+      navigate('/');
     }
   }, [navigate]);
 

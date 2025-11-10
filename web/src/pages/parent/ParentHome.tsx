@@ -79,7 +79,7 @@ export default function ParentHome() {
   const loadData = async () => {
     const { data: { session } } = await supabase.auth.getSession();
     if (!session) {
-      navigate('/parent-login');
+      navigate('/');
       return;
     }
 

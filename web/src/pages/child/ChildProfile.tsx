@@ -18,7 +18,7 @@ export default function ChildProfile() {
   useEffect(() => {
     const session = localStorage.getItem('child_session');
     if (!session) {
-      navigate('/child-login');
+      navigate('/');
       return;
     }
 
@@ -27,7 +27,7 @@ export default function ChildProfile() {
       parsedSession = JSON.parse(session);
       setChildSession(parsedSession);
     } catch (e) {
-      navigate('/child-login');
+      navigate('/');
       return;
     }
 

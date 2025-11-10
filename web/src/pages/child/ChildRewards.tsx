@@ -27,7 +27,7 @@ export default function ChildRewards() {
   useEffect(() => {
     const session = localStorage.getItem('child_session');
     if (!session) {
-      navigate('/child-login');
+      navigate('/');
       return;
     }
 
@@ -38,7 +38,7 @@ export default function ChildRewards() {
       // 초기 로드 시 최신 포인트 가져오기
       loadPointsHistory(parsedSession.childId);
     } catch (e) {
-      navigate('/child-login');
+      navigate('/');
       return;
     }
 

@@ -55,7 +55,7 @@ export default function ParentApprovals() {
   const loadSubmissions = async () => {
     const { data: { session } } = await supabase.auth.getSession();
     if (!session) {
-      navigate('/parent-login');
+      navigate('/');
       return;
     }
 

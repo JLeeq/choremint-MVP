@@ -3,8 +3,6 @@ import { createRoot } from 'react-dom/client'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import './index.css'
 import LoginSelect from './pages/LoginSelect.tsx'
-import ParentLogin from './pages/App.tsx'
-import ChildLogin from './pages/ChildLogin.tsx'
 // Parent pages
 import ParentHome from './pages/parent/ParentHome.tsx'
 import ParentChores from './pages/parent/ParentChores.tsx'
@@ -22,8 +20,8 @@ createRoot(document.getElementById('root')!).render(
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<LoginSelect />} />
-        <Route path="/parent-login" element={<ParentLogin />} />
-        <Route path="/child-login" element={<ChildLogin />} />
+        <Route path="/parent-login" element={<Navigate to="/" replace />} />
+        <Route path="/child-login" element={<Navigate to="/" replace />} />
         
         {/* Parent routes */}
         <Route path="/parent/home" element={<ParentHome />} />

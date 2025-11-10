@@ -15,7 +15,7 @@ export function useParentAuth() {
       setSession(session);
       setLoading(false);
       if (!session) {
-        navigate('/parent-login');
+        navigate('/');
       }
     });
 
@@ -25,7 +25,7 @@ export function useParentAuth() {
     } = supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session);
       if (!session) {
-        navigate('/parent-login');
+        navigate('/');
       }
     });
 
@@ -55,7 +55,7 @@ export function useChildAuth() {
           setLoading(false);
         } else {
           localStorage.removeItem('child_session');
-          navigate('/child-login');
+          navigate('/');
         }
       } catch (e) {
         localStorage.removeItem('child_session');

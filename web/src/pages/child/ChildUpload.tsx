@@ -47,7 +47,7 @@ export default function ChildUpload() {
           loadChore(choreId);
         }
       } catch (e) {
-        navigate('/child-login');
+        navigate('/');
       }
     } else {
       navigate('/child-login');
