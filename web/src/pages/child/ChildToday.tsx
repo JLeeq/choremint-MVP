@@ -204,7 +204,7 @@ export default function ChildToday() {
               Hi, {childSession.nickname} 👋
             </h1>
             <div className="bg-green-100 rounded-full px-4 py-2 flex items-center gap-1">
-              <Icon name="star" size={16} />
+              <Icon name="star" size={14} className="md:w-4 md:h-4" />
               <span className="text-green-700 font-semibold text-sm">
                 {childSession.points} 포인트
               </span>

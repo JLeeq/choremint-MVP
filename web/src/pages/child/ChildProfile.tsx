@@ -90,7 +90,7 @@ export default function ChildProfile() {
               <div className="flex justify-between items-center mb-2">
                 <span className="text-gray-600">보유 포인트</span>
                 <span className="text-2xl font-bold text-blue-600 flex items-center gap-1">
-                  <Icon name="star" size={24} />
+                  <Icon name="star" size={20} className="md:w-6 md:h-6" />
                   {childSession.points}점
                 </span>
               </div>

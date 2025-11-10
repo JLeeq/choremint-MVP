@@ -297,7 +297,7 @@ export default function Dashboard() {
                       <div className="flex justify-between items-center mb-3">
                         <span className="font-bold text-lg text-gray-800">{child.nickname}</span>
                         <span className="text-blue-600 font-bold text-lg flex items-center gap-1">
-                          <Icon name="star" size={20} />
+                          <Icon name="star" size={18} className="md:w-5 md:h-5" />
                           {child.points}점
                         </span>
                       </div>

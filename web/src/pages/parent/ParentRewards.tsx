@@ -114,7 +114,7 @@ export default function ParentRewards() {
                 <div key={child.id} className="flex justify-between items-center p-4 bg-gray-50 rounded-lg">
                   <span className="font-semibold text-gray-800">{child.nickname}</span>
                   <span className="text-2xl font-bold text-blue-600 flex items-center gap-1">
-                    <Icon name="star" size={24} />
+                    <Icon name="star" size={20} className="md:w-6 md:h-6" />
                     {child.points}점
                   </span>
                 </div>

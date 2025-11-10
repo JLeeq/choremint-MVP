@@ -110,7 +110,9 @@ export default function Icon({ name, className = '', size = 24, active = false }
         width: size, 
         height: size, 
         display: 'inline-block',
-        transition: 'color 0.2s ease-in-out'
+        transition: 'color 0.2s ease-in-out',
+        minWidth: size,
+        minHeight: size
       }}
       dangerouslySetInnerHTML={{ 
         __html: processedSvg

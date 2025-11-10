@@ -132,7 +132,7 @@ export default function ChildDashboard() {
               </h1>
               <p className="text-gray-600 mt-1">
                 현재 포인트: <span className="font-bold text-orange-500 text-lg inline-flex items-center gap-1">
-                  <Icon name="star" size={20} />
+                  <Icon name="star" size={18} className="md:w-5 md:h-5" />
                   {childSession.points}점
                 </span>
               </p>
