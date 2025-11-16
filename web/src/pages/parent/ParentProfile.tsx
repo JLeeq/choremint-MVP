@@ -111,8 +111,27 @@ export default function ParentProfile() {
   };
 
   const handleLogout = async () => {
-    await supabase.auth.signOut();
-    navigate('/');
+    try {
+      // Remove all Supabase channels
+      await supabase.removeAllChannels();
+      
+      // Sign out from Supabase
+      const { error } = await supabase.auth.signOut();
+      if (error) {
+        console.error('Logout error:', error);
+      }
+      
+      // Clear any local storage
+      localStorage.clear();
+      sessionStorage.clear();
+      
+      // Force navigation to login page
+      window.location.href = '/';
+    } catch (error) {
+      console.error('Logout error:', error);
+      // Force navigation even if there's an error
+      window.location.href = '/';
+    }
   };
 
   if (loading) {

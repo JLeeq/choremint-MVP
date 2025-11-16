@@ -59,9 +59,26 @@ export default function ChildProfile() {
     };
   }, [navigate]);
 
-  const handleLogout = () => {
-    localStorage.removeItem('child_session');
-    navigate('/');
+  const handleLogout = async () => {
+    try {
+      // Remove all Supabase channels
+      await supabase.removeAllChannels();
+      
+      // Clear child session from localStorage
+      localStorage.removeItem('child_session');
+      
+      // Clear all storage to be safe
+      localStorage.clear();
+      sessionStorage.clear();
+      
+      // Force navigation to login page
+      window.location.href = '/';
+    } catch (error) {
+      console.error('Logout error:', error);
+      // Force navigation even if there's an error
+      localStorage.removeItem('child_session');
+      window.location.href = '/';
+    }
   };
 
   if (!childSession) {
