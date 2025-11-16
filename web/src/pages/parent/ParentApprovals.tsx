@@ -214,7 +214,7 @@ export default function ParentApprovals() {
                   <button
                     onClick={() => handleReject(selectedSubmission.id)}
                     disabled={loading}
-                    className="flex-1 px-6 py-3 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors disabled:opacity-50 font-bold"
+                    className="flex-1 px-6 py-3 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors disabled:opacity-50 font-bold"
                   >
                     Reject
                   </button>

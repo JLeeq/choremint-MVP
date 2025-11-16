@@ -53,6 +53,9 @@ export default function ParentChores() {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
+  const assignButtonLabel =
+    children.length === 1 ? `${children[0].nickname}에게 할당` : 'Assign to All Children';
+
   useEffect(() => {
     loadData();
     loadTemplates();
@@ -564,7 +567,7 @@ export default function ParentChores() {
                         <button
                           type="button"
                           onClick={() => handleRemoveStep(index)}
-                          className="px-3 py-2 text-red-500 hover:bg-red-50 rounded text-sm"
+                        className="px-3 py-2 text-gray-600 hover:bg-gray-100 rounded text-sm"
                         >
                           Delete
                         </button>
@@ -609,7 +612,7 @@ export default function ParentChores() {
                   <button
                     onClick={() => handleDeleteChore(chore.id)}
                     disabled={loading}
-                    className="ml-4 px-3 py-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors disabled:opacity-50"
+                    className="ml-4 px-3 py-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors disabled:opacity-50"
                     title="Delete"
                   >
                     🗑️
@@ -620,7 +623,7 @@ export default function ParentChores() {
                   disabled={loading || children.length === 0}
                   className="w-full px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors disabled:opacity-50"
                 >
-                  Assign to All Children
+                  {assignButtonLabel}
                 </button>
               </div>
             ))
