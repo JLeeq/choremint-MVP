@@ -7,12 +7,14 @@ import { initializePushNotifications } from '../../lib/pushNotifications';
 interface Family {
   id: string;
   family_code: string;
+  family_name?: string;
 }
 
 interface Child {
   id: string;
   nickname: string;
   points: number;
+  avatar_url?: string;
 }
 
 
@@ -104,10 +106,10 @@ export default function ParentHome() {
 
     try {
       console.log('Loading family for user:', session.user.id);
-      // Load family
+      // Load family with family_name
       const { data: familyData, error: familyError } = await supabase
         .from('families')
-        .select('*')
+        .select('id, family_code, family_name')
         .eq('parent_id', session.user.id)
         .single();
       
@@ -249,7 +251,7 @@ export default function ParentHome() {
       // Load children with points from child_points_view
       const { data: childrenData, error: childrenError } = await supabase
         .from('children')
-        .select('id, nickname, family_id, created_at')
+        .select('id, nickname, family_id, created_at, avatar_url, goal_points, reward')
         .eq('family_id', familyId)
         .order('created_at', { ascending: false });
 
@@ -272,12 +274,14 @@ export default function ParentHome() {
               id: child.id,
               nickname: child.nickname,
               points: pointsMap.get(child.id) || 0,
+              avatar_url: child.avatar_url,
             }));
           } else {
             childrenWithPoints = childrenData.map(child => ({
               id: child.id,
               nickname: child.nickname,
               points: 0,
+              avatar_url: child.avatar_url,
             }));
           }
         
@@ -429,11 +433,46 @@ export default function ParentHome() {
   return (
     <div className="min-h-screen bg-white pb-20">
       <div className="max-w-4xl mx-auto p-4">
+        {/* Children Avatar Tabs */}
+        {children.length > 0 && (
+          <div className="mb-4 flex gap-3 overflow-x-auto pb-2">
+            {children.map((child) => (
+              <div
+                key={child.id}
+                className="flex flex-col items-center gap-2 min-w-[80px] cursor-pointer"
+                onClick={() => {
+                  // Navigate to child settings page
+                  navigate(`/parent/child/${child.id}/settings`);
+                }}
+              >
+                <div className="w-16 h-16 rounded-full border-2 border-[#5CE1C6] overflow-hidden bg-gradient-to-br from-orange-400 to-pink-400 flex items-center justify-center">
+                  {child.avatar_url ? (
+                    <img
+                      src={child.avatar_url}
+                      alt={child.nickname}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <span className="text-2xl font-bold text-white">
+                      {child.nickname[0].toUpperCase()}
+                    </span>
+                  )}
+                </div>
+                <span className="text-xs font-medium text-gray-700 text-center max-w-[80px] truncate">
+                  {child.nickname}
+                </span>
+              </div>
+            ))}
+          </div>
+        )}
+
         {/* Header */}
         <div className="bg-white rounded-2xl shadow-lg p-6 mb-4">
           <div className="flex justify-between items-center mb-4">
             <div>
-              <h1 className="text-2xl font-bold text-gray-800">Home</h1>
+              <h1 className="text-2xl font-bold text-gray-800">
+                {family?.family_name ? `${family.family_name}'s Home` : 'Home'}
+              </h1>
               <p className="text-gray-600 text-sm mt-1">Family Code: 
                 <span className="font-mono font-bold ml-2">{family?.family_code || 'Loading...'}</span>
               </p>
@@ -514,14 +553,14 @@ export default function ParentHome() {
               {children.map((child) => {
                 const progress = Math.min(100, (child.points / 100) * 100); // Example: 100 points = 100%
                 return (
-                  <div key={child.id} className="space-y-2">
+                  <div key={child.id} id={`child-${child.id}`} className="space-y-2">
                     <div className="flex justify-between items-center">
                       <span className="font-semibold text-gray-800">{child.nickname}</span>
                       <span className="text-sm text-gray-600">{child.points} pts</span>
                     </div>
                     <div className="w-full bg-gray-200 rounded-full h-3">
                       <div
-                        className="bg-gradient-to-r from-[#5CE1C6] to-[#FF7F7F] h-3 rounded-full transition-all duration-300"
+                        className="bg-[#5CE1C6] h-3 rounded-full transition-all duration-300"
                         style={{ width: `${progress}%` }}
                       />
                     </div>

@@ -311,7 +311,7 @@ export default function LoginSelect() {
             <button
               type="submit"
               disabled={loading || !familyCode.trim() || !pin.trim()}
-              className="w-full px-6 py-4 bg-gradient-to-r from-orange-400 to-pink-400 text-white rounded-xl hover:from-orange-500 hover:to-pink-500 transition-all disabled:opacity-50 disabled:cursor-not-allowed font-bold text-lg shadow-lg hover:shadow-xl transform hover:scale-[1.02]"
+              className="w-full px-6 py-4 bg-[#5CE1C6] text-white rounded-xl hover:bg-[#4BC9B0] transition-all disabled:opacity-50 disabled:cursor-not-allowed font-bold text-lg shadow-lg hover:shadow-xl transform hover:scale-[1.02]"
             >
               {loading ? 'Logging in...' : 'Login'}
             </button>

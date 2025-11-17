@@ -43,6 +43,9 @@ export default function ChildToday() {
   const [characterMood, setCharacterMood] = useState<'happy' | 'normal' | 'sleepy'>('happy');
   const [selectedAssignment, setSelectedAssignment] = useState<ChoreAssignment | null>(null);
   const [showChoreDetail, setShowChoreDetail] = useState(false);
+  const [goalPoints, setGoalPoints] = useState<number | null>(null);
+  const [reward, setReward] = useState<string | null>(null);
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -193,24 +196,42 @@ export default function ChildToday() {
   const loadLatestPoints = async (childId: string) => {
     try {
       // Use child_points_view for real-time accurate points from points_ledger
-      const { data } = await supabase
+      const { data: pointsData } = await supabase
         .from('child_points_view')
         .select('total_points')
         .eq('child_id', childId)
         .single();
 
-      if (data) {
+      // Load goal_points, reward, and avatar_url from children table
+      const { data: childData } = await supabase
+        .from('children')
+        .select('goal_points, reward, avatar_url')
+        .eq('id', childId)
+        .single();
+
+      if (pointsData) {
         const session = localStorage.getItem('child_session');
         if (session) {
           try {
             const parsedSession: ChildSession = JSON.parse(session);
-            const updatedSession = { ...parsedSession, points: data.total_points };
+            const updatedSession = { ...parsedSession, points: pointsData.total_points };
             localStorage.setItem('child_session', JSON.stringify(updatedSession));
             setChildSession(updatedSession);
-            calculateLevel(data.total_points);
+            calculateLevel(pointsData.total_points, childData?.goal_points || null);
           } catch (e) {
             console.error('Error updating session:', e);
           }
+        }
+      }
+
+      if (childData && pointsData) {
+        setGoalPoints(childData.goal_points);
+        setReward(childData.reward);
+        setAvatarUrl(childData.avatar_url);
+        
+        // Check if goal is achieved and reset if needed
+        if (childData.goal_points && pointsData.total_points >= childData.goal_points) {
+          await handleGoalAchievement(childId, childData.goal_points, childData.reward, pointsData.total_points);
         }
       }
     } catch (error) {
@@ -218,7 +239,67 @@ export default function ChildToday() {
     }
   };
 
-  const calculateLevel = (points: number) => {
+  const handleGoalAchievement = async (
+    childId: string,
+    goalPoints: number,
+    reward: string | null,
+    pointsAtAchievement: number
+  ) => {
+    try {
+      // Check if this goal was already recorded
+      const { data: existingGoal } = await supabase
+        .from('goal_history')
+        .select('id')
+        .eq('child_id', childId)
+        .eq('points_at_achievement', pointsAtAchievement)
+        .gte('achieved_at', new Date(Date.now() - 60000).toISOString()) // Within last minute
+        .single();
+
+      if (existingGoal) {
+        // Already recorded, skip
+        return;
+      }
+
+      // Record goal achievement
+      const { error: historyError } = await supabase
+        .from('goal_history')
+        .insert({
+          child_id: childId,
+          goal_points: goalPoints,
+          reward: reward,
+          points_at_achievement: pointsAtAchievement,
+        });
+
+      if (historyError) {
+        console.error('Error recording goal achievement:', historyError);
+        return;
+      }
+
+      // Reset points by subtracting goal_points from points_ledger
+      const { error: resetError } = await supabase
+        .from('points_ledger')
+        .insert({
+          child_id: childId,
+          delta: -goalPoints,
+          reason: 'goal_achieved_reset',
+        });
+
+      if (resetError) {
+        console.error('Error resetting points:', resetError);
+      } else {
+        // Reload points after reset
+        setTimeout(() => {
+          if (childSession) {
+            loadLatestPoints(childSession.childId);
+          }
+        }, 500);
+      }
+    } catch (error) {
+      console.error('Error handling goal achievement:', error);
+    }
+  };
+
+  const calculateLevel = (points: number, goalPoints: number | null) => {
     // 레벨 계산: 100포인트마다 레벨 1 증가
     const newLevel = Math.floor(points / 100) + 1;
     const currentLevelExp = (newLevel - 1) * 100;
@@ -229,13 +310,21 @@ export default function ChildToday() {
     setExp(currentExp);
     setNextLevelExp(nextExp);
 
-    // 포인트에 따라 캐릭터 기분 결정
-    if (points >= 500) {
-      setCharacterMood('happy');
-    } else if (points >= 200) {
-      setCharacterMood('normal');
+    // 캐릭터 기분을 목표치 대비 퍼센트로 결정
+    if (goalPoints && goalPoints > 0) {
+      const progressPercent = (points / goalPoints) * 100;
+      if (progressPercent >= 100) {
+        setCharacterMood('happy');
+      } else if (progressPercent >= 66) {
+        setCharacterMood('happy');
+      } else if (progressPercent >= 33) {
+        setCharacterMood('normal');
+      } else {
+        setCharacterMood('sleepy');
+      }
     } else {
-      setCharacterMood('sleepy');
+      // 목표가 없으면 기본값
+      setCharacterMood('normal');
     }
   };
 
@@ -288,9 +377,26 @@ export default function ChildToday() {
         <div className="space-y-4">
           {/* 헤더: 카드랑 같은 폭/인셋, 배경 없음 */}
           <div className="px-4">
-            <h1 className="text-2xl font-bold text-gray-800 mb-3">
-              Hi, {childSession.nickname} 👋
-            </h1>
+            <div className="flex items-center gap-3 mb-3">
+              {avatarUrl ? (
+                <div className="w-12 h-12 rounded-full border-2 border-[#5CE1C6] overflow-hidden bg-gradient-to-br from-orange-400 to-pink-400 flex-shrink-0">
+                  <img
+                    src={avatarUrl}
+                    alt={childSession.nickname}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              ) : (
+                <div className="w-12 h-12 rounded-full border-2 border-[#5CE1C6] overflow-hidden bg-gradient-to-br from-orange-400 to-pink-400 flex items-center justify-center flex-shrink-0">
+                  <span className="text-xl font-bold text-white">
+                    {childSession.nickname[0].toUpperCase()}
+                  </span>
+                </div>
+              )}
+              <h1 className="text-2xl font-bold text-gray-800">
+                Hi, {childSession.nickname} 👋
+              </h1>
+            </div>
             <p className="text-gray-600 text-sm mb-7">
               Complete today&apos;s chores!
             </p>
@@ -427,19 +533,36 @@ export default function ChildToday() {
             </div>
           </div>
           
-          {/* EXP Bar */}
-          <div className="space-y-2">
-            <div className="flex justify-between text-xs text-gray-600">
-              <span>EXP: {exp} / {nextLevelExp}</span>
-              <span>{Math.round((exp / nextLevelExp) * 100)}%</span>
+          {/* Goal Points & Reward */}
+          {goalPoints && (
+            <div className="mt-4 p-4 bg-gradient-to-br from-[#FF7F7F] to-[#FFB6C1] rounded-2xl text-white">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-sm font-semibold">Goal Points</span>
+                <span className="text-lg font-bold">
+                  {childSession?.points || 0} / {goalPoints} pts
+                </span>
+              </div>
+              <div className="w-full bg-white/30 rounded-full h-3 mb-3">
+                <div
+                  className="bg-white rounded-full h-3 transition-all duration-500"
+                  style={{ 
+                    width: `${Math.min(100, ((childSession?.points || 0) / goalPoints) * 100)}%` 
+                  }}
+                />
+              </div>
+              {reward && (
+                <div className="text-center">
+                  <p className="text-xs opacity-90 mb-1">Reward when you reach the goal:</p>
+                  <p className="text-lg font-bold">🎁 {reward}</p>
+                </div>
+              )}
+              {childSession && childSession.points >= goalPoints && (
+                <div className="mt-2 text-center">
+                  <p className="text-sm font-bold animate-pulse">🎉 Goal Achieved! 🎉</p>
+                </div>
+              )}
             </div>
-            <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
-              <div
-                className="bg-gradient-to-r from-[#5CE1C6] to-[#4ECDC4] h-full rounded-full transition-all duration-500 ease-out"
-                style={{ width: `${(exp / nextLevelExp) * 100}%` }}
-              />
-            </div>
-          </div>
+          )}
         </div>
 
         {/* Today's Chores */}

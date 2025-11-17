@@ -18,9 +18,18 @@ interface PointsLedger {
   created_at: string;
 }
 
+interface GoalHistory {
+  id: string;
+  goal_points: number;
+  reward: string | null;
+  achieved_at: string;
+  points_at_achievement: number;
+}
+
 export default function ChildRewards() {
   const [childSession, setChildSession] = useState<ChildSession | null>(null);
   const [pointsHistory, setPointsHistory] = useState<PointsLedger[]>([]);
+  const [goalHistory, setGoalHistory] = useState<GoalHistory[]>([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
@@ -35,8 +44,9 @@ export default function ChildRewards() {
     try {
       parsedSession = JSON.parse(session);
       setChildSession(parsedSession);
-      // 초기 로드 시 최신 포인트 가져오기
+      // 초기 로드 시 최신 포인트와 골 히스토리 가져오기
       loadPointsHistory(parsedSession.childId);
+      loadGoalHistory(parsedSession.childId);
     } catch (e) {
       navigate('/');
       return;
@@ -62,8 +72,27 @@ export default function ChildRewards() {
       )
       .subscribe();
 
+    // Subscribe to goal_history updates
+    const goalHistoryChannel = supabase
+      .channel('child-rewards-goal-history-updates')
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'goal_history',
+          filter: `child_id=eq.${parsedSession.childId}`,
+        },
+        (payload) => {
+          console.log('Goal history updated:', payload);
+          loadGoalHistory(parsedSession.childId);
+        }
+      )
+      .subscribe();
+
     return () => {
       supabase.removeChannel(pointsLedgerChannel);
+      supabase.removeChannel(goalHistoryChannel);
     };
   }, [navigate]);
 
@@ -110,6 +139,28 @@ export default function ChildRewards() {
     }
   };
 
+  const loadGoalHistory = async (childId: string) => {
+    try {
+      const { data, error } = await supabase
+        .from('goal_history')
+        .select('*')
+        .eq('child_id', childId)
+        .order('achieved_at', { ascending: false })
+        .limit(20);
+
+      if (error) {
+        console.error('Error loading goal history:', error);
+        return;
+      }
+
+      if (data) {
+        setGoalHistory(data);
+      }
+    } catch (error) {
+      console.error('Error loading goal history:', error);
+    }
+  };
+
   if (loading || !childSession) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-white pb-20">
@@ -132,6 +183,35 @@ export default function ChildRewards() {
           </div>
         </div>
 
+        {/* Goal History */}
+        {goalHistory.length > 0 && (
+          <div className="bg-white rounded-3xl shadow-xl p-6 mb-4">
+            <h2 className="text-xl font-bold text-gray-800 mb-4">Goal History</h2>
+            <div className="space-y-3">
+              {goalHistory.map((goal) => (
+                <div key={goal.id} className="flex justify-between items-center p-4 bg-gray-50 rounded-lg">
+                  <div>
+                    <p className="font-medium text-gray-800">
+                      Goal Achieved! 🎉
+                    </p>
+                    <p className="text-xs text-gray-500">
+                      {new Date(goal.achieved_at).toLocaleDateString()}
+                    </p>
+                    {goal.reward && (
+                      <p className="text-sm text-gray-600 mt-1">
+                        🎁 {goal.reward}
+                      </p>
+                    )}
+                  </div>
+                  <span className="text-lg font-bold text-[#5CE1C6]">
+                    {goal.goal_points} pts
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
         {/* Points History */}
         <div className="bg-white rounded-3xl shadow-xl p-6">
           <h2 className="text-xl font-bold text-gray-800 mb-4">Points History</h2>
@@ -143,7 +223,9 @@ export default function ChildRewards() {
                 <div key={entry.id} className="flex justify-between items-center p-4 bg-gray-50 rounded-lg">
                   <div>
                     <p className="font-medium text-gray-800">
-                      {entry.reason === 'chore_approved' ? 'Chore Completed' : entry.reason}
+                      {entry.reason === 'chore_approved' ? 'Chore Completed' : 
+                       entry.reason === 'goal_achieved_reset' ? 'Goal Achieved (Reset)' :
+                       entry.reason}
                     </p>
                     <p className="text-xs text-gray-500">
                       {new Date(entry.created_at).toLocaleString()}

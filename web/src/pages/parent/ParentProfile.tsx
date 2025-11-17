@@ -6,6 +6,7 @@ import ParentTabNav from '../../components/ParentTabNav';
 interface Family {
   id: string;
   family_code: string;
+  family_name?: string;
 }
 
 export default function ParentProfile() {
@@ -74,6 +75,12 @@ export default function ParentProfile() {
 
           if (familyData) {
             setFamily(familyData);
+            // Set family_name if it exists, otherwise use profile name
+            if (familyData.family_name) {
+              setFamilyName(familyData.family_name);
+            } else if (profileData.name) {
+              setFamilyName(profileData.name);
+            }
           }
         }
       }
@@ -90,6 +97,19 @@ export default function ParentProfile() {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) throw new Error('Login required.');
 
+      // Update family_name in families table
+      if (family) {
+        const { error: familyError } = await supabase
+          .from('families')
+          .update({
+            family_name: familyName,
+          })
+          .eq('id', family.id);
+
+        if (familyError) throw familyError;
+      }
+
+      // Update profile
       const { error } = await supabase
         .from('profiles')
         .update({
@@ -151,13 +171,14 @@ export default function ParentProfile() {
           <div className="space-y-6">
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-2">
-                Family Name
+                Family Name (This will appear as "~'s Home" on the home page)
               </label>
               <input
                 type="text"
                 value={familyName}
                 onChange={(e) => setFamilyName(e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="Enter family name"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#5CE1C6]"
               />
             </div>
 

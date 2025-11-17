@@ -224,7 +224,7 @@ export default function ChildUpload() {
 
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Photo Upload Card */}
-          <div className="bg-white rounded-2xl p-5 shadow-md border-2 border-green-100">
+          <div className="bg-white rounded-2xl p-5 shadow-md border-2 border-[#5CE1C6]/30">
             <label className="block text-sm font-semibold text-gray-700 mb-3">
               Select Photo
             </label>
@@ -232,7 +232,7 @@ export default function ChildUpload() {
               type="file"
               accept="image/*"
               onChange={handleFileChange}
-              className="w-full px-4 py-3 bg-white border-2 border-green-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-400 focus:border-green-400 transition-all file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-green-50 file:text-green-700 hover:file:bg-green-100"
+              className="w-full px-4 py-3 bg-white border-2 border-[#5CE1C6] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#5CE1C6] focus:border-[#4BC9B0] transition-all file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-[#5CE1C6]/10 file:text-[#5CE1C6] hover:file:bg-[#5CE1C6]/20"
               required
             />
           </div>
