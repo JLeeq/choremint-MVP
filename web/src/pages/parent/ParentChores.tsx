@@ -453,27 +453,27 @@ export default function ParentChores() {
               </div>
             ) : (
               chores.map((chore) => (
-                <div key={chore.id} className="bg-gray-50 rounded-xl p-3 sm:p-4 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+                <div key={chore.id} className="bg-gray-50 rounded-xl p-2 sm:p-4 flex items-center justify-between gap-2 overflow-hidden">
                   <div 
-                    className="flex-1 cursor-pointer flex items-center gap-3 sm:gap-4 min-w-0"
+                    className="flex-1 cursor-pointer flex items-center gap-2 sm:gap-4 min-w-0"
                     onClick={() => setSelectedChoreForDetail(chore)}
                   >
-                    <div className="w-10 h-10 sm:w-12 sm:h-12 bg-orange-100 rounded-2xl flex items-center justify-center flex-shrink-0">
-                      <Icon name={chore.icon || 'chore'} size={20} className="sm:w-6 sm:h-6" />
+                    <div className="w-8 h-8 sm:w-12 sm:h-12 bg-orange-100 rounded-xl sm:rounded-2xl flex items-center justify-center flex-shrink-0">
+                      <Icon name={chore.icon || 'chore'} size={16} className="sm:w-6 sm:h-6" />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <h3 className="text-base sm:text-lg font-bold text-gray-800 truncate">{chore.title}</h3>
-                      <p className="text-sm sm:text-base text-gray-600 mt-1 flex items-center gap-1">
-                        <Icon name="star" size={14} className="sm:w-4 sm:h-4" />
-                        {chore.points} pts
+                      <h3 className="text-sm sm:text-lg font-bold text-gray-800 truncate">{chore.title}</h3>
+                      <p className="text-xs sm:text-base text-gray-600 flex items-center gap-1">
+                        <Icon name="star" size={12} className="sm:w-4 sm:h-4" />
+                        <span className="whitespace-nowrap">{chore.points} pts</span>
                       </p>
                     </div>
                   </div>
-                  <div className="flex items-center gap-2 sm:gap-2 flex-shrink-0">
+                  <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
                     <button
                       onClick={() => handleAssignChore(chore.id)}
                       disabled={loading || children.length === 0}
-                      className="px-3 sm:px-4 py-2 bg-[#5CE1C6] text-white rounded-full hover:bg-[#4BC9B0] transition-colors disabled:opacity-50 font-semibold text-sm sm:text-base min-h-[44px]"
+                      className="px-2 sm:px-4 py-1.5 sm:py-2 bg-[#5CE1C6] text-white rounded-full hover:bg-[#4BC9B0] transition-colors disabled:opacity-50 font-semibold text-xs sm:text-base whitespace-nowrap min-h-[36px] sm:min-h-[44px]"
                     >
                       + Assign
                     </button>
@@ -488,18 +488,18 @@ export default function ParentChores() {
                         setShowTemplates(false);
                         setShowFABMenu(false);
                       }}
-                      className="w-11 h-11 sm:w-12 sm:h-12 text-gray-600 hover:bg-gray-200 rounded-lg transition-colors flex items-center justify-center min-h-[44px]"
+                      className="w-9 h-9 sm:w-12 sm:h-12 text-gray-600 hover:bg-gray-200 rounded-lg transition-colors flex items-center justify-center flex-shrink-0 min-h-[36px] sm:min-h-[44px]"
                       title="Edit"
                     >
-                      <Icon name="pencil" size={18} className="sm:w-5 sm:h-5" />
+                      <Icon name="pencil" size={16} className="sm:w-5 sm:h-5" />
                     </button>
                     <button
                       onClick={() => handleDeleteChore(chore.id)}
                       disabled={loading}
-                      className="w-11 h-11 sm:w-12 sm:h-12 text-gray-600 hover:bg-gray-200 rounded-lg transition-colors disabled:opacity-50 flex items-center justify-center min-h-[44px]"
+                      className="w-9 h-9 sm:w-12 sm:h-12 text-gray-600 hover:bg-gray-200 rounded-lg transition-colors disabled:opacity-50 flex items-center justify-center flex-shrink-0 min-h-[36px] sm:min-h-[44px]"
                       title="Delete"
                     >
-                      <Icon name="trash" size={18} className="sm:w-5 sm:h-5" />
+                      <Icon name="trash" size={16} className="sm:w-5 sm:h-5" />
                     </button>
                   </div>
                 </div>
@@ -510,7 +510,7 @@ export default function ParentChores() {
       </div>
 
       {/* FAB (Floating Action Button) - 오른쪽 하단 */}
-      <div className="fixed bottom-20 sm:bottom-24 right-4 z-50">
+      <div className="fixed bottom-24 sm:bottom-24 right-4 z-50">
         {/* FAB Menu - 위아래 배치, 텍스트는 한 줄로 (absolute positioning으로 플러스 버튼 위치에 영향 없음) */}
         {showFABMenu && (
           <div className="absolute bottom-full right-0 mb-3 flex flex-col gap-3">
@@ -548,11 +548,11 @@ export default function ParentChores() {
 
       {/* Template Selection - 전체 화면 모달 */}
       {showTemplates && !showCustomForm && (
-        <div className="fixed inset-0 bg-white z-50 overflow-y-auto">
-          <div className="max-w-4xl mx-auto p-4 sm:p-6">
+        <div className="fixed inset-0 bg-white z-50 overflow-y-auto overscroll-contain">
+          <div className="max-w-4xl mx-auto p-4 sm:p-6 pb-20">
             <div className="flex justify-between items-center mb-4 sm:mb-6 pt-4 sm:pt-8">
               <div className="flex-1"></div>
-              <h1 className="text-xl sm:text-2xl font-bold text-gray-800 text-center flex-1">Select Template</h1>
+              <h1 className="text-xl sm:text-2xl font-bold text-gray-800 text-center flex-1 truncate px-2">Select Template</h1>
               <div className="flex-1 flex justify-end">
                 <button
                   onClick={() => {
@@ -565,7 +565,7 @@ export default function ParentChores() {
                 </button>
               </div>
             </div>
-            <div className="grid grid-cols-2 gap-3 sm:gap-4">
+            <div className="grid grid-cols-2 gap-3 sm:gap-4 pb-4">
               {templates.map((template) => (
                 <div
                   key={template.id}
@@ -578,7 +578,7 @@ export default function ParentChores() {
                   </div>
                   
                   {/* Title */}
-                  <h4 className="text-xs sm:text-sm font-bold text-gray-800 mb-2 text-center line-clamp-2">
+                  <h4 className="text-xs sm:text-sm font-bold text-gray-800 mb-2 text-center truncate">
                     {getEnglishTitle(template.title)}
                   </h4>
                   
@@ -602,11 +602,11 @@ export default function ParentChores() {
 
       {/* Custom Form - 전체 화면 모달 */}
       {showCustomForm && (
-        <div className="fixed inset-0 bg-white z-50 overflow-y-auto">
-          <div className="max-w-2xl mx-auto p-4 sm:p-6">
+        <div className="fixed inset-0 bg-white z-50 overflow-y-auto overscroll-contain">
+          <div className="max-w-2xl mx-auto p-4 sm:p-6 pb-20">
             <div className="flex justify-between items-center mb-6 sm:mb-8 pt-4 sm:pt-8">
               <div className="flex-1"></div>
-              <h1 className="text-xl sm:text-2xl font-bold text-gray-800 text-center flex-1">{editingChoreId ? 'Edit Chore' : 'Create Custom'}</h1>
+              <h1 className="text-xl sm:text-2xl font-bold text-gray-800 text-center flex-1 truncate px-2">{editingChoreId ? 'Edit Chore' : 'Create Custom'}</h1>
               <div className="flex-1 flex justify-end">
                 <button
                   onClick={() => {
