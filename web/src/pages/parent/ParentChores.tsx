@@ -550,20 +550,18 @@ export default function ParentChores() {
       {showTemplates && !showCustomForm && (
         <div className="fixed inset-0 bg-white z-50 overflow-y-auto overscroll-contain">
           <div className="max-w-4xl mx-auto p-4 sm:p-6 pb-20">
-            <div className="flex justify-between items-center mb-4 sm:mb-6 pt-4 sm:pt-8">
-              <div className="flex-1"></div>
-              <h1 className="text-xl sm:text-2xl font-bold text-gray-800 text-center flex-1 truncate px-2">Select Template</h1>
-              <div className="flex-1 flex justify-end">
-                <button
-                  onClick={() => {
-                    setShowTemplates(false);
-                    setShowFABMenu(false);
-                  }}
-                  className="w-10 h-10 sm:w-12 sm:h-12 bg-gray-100 rounded-full flex items-center justify-center text-gray-600 hover:bg-gray-200 transition-colors text-xl sm:text-2xl min-h-[44px]"
-                >
-                  ×
-                </button>
-              </div>
+            <div className="flex justify-between items-center mb-4 sm:mb-6 pt-4 sm:pt-8 gap-2">
+              <div className="w-10 h-10 sm:w-12 sm:h-12 flex-shrink-0"></div>
+              <h1 className="text-lg sm:text-2xl font-bold text-gray-800 text-center flex-1 whitespace-nowrap">Select Template</h1>
+              <button
+                onClick={() => {
+                  setShowTemplates(false);
+                  setShowFABMenu(false);
+                }}
+                className="w-10 h-10 sm:w-12 sm:h-12 bg-gray-100 rounded-full flex items-center justify-center text-gray-600 hover:bg-gray-200 transition-colors text-xl sm:text-2xl min-h-[44px] flex-shrink-0"
+              >
+                ×
+              </button>
             </div>
             <div className="grid grid-cols-2 gap-3 sm:gap-4 pb-4">
               {templates.map((template) => (
@@ -604,21 +602,19 @@ export default function ParentChores() {
       {showCustomForm && (
         <div className="fixed inset-0 bg-white z-50 overflow-y-auto overscroll-contain">
           <div className="max-w-2xl mx-auto p-4 sm:p-6 pb-20">
-            <div className="flex justify-between items-center mb-6 sm:mb-8 pt-4 sm:pt-8">
-              <div className="flex-1"></div>
-              <h1 className="text-xl sm:text-2xl font-bold text-gray-800 text-center flex-1 truncate px-2">{editingChoreId ? 'Edit Chore' : 'Create Custom'}</h1>
-              <div className="flex-1 flex justify-end">
-                <button
-                  onClick={() => {
-                    setShowCustomForm(false);
-                    setShowFABMenu(false);
-                    setEditingChoreId(null);
-                  }}
-                  className="w-10 h-10 sm:w-12 sm:h-12 bg-gray-100 rounded-full flex items-center justify-center text-gray-600 hover:bg-gray-200 transition-colors text-xl sm:text-2xl min-h-[44px]"
-                >
-                  ×
-                </button>
-              </div>
+            <div className="flex justify-between items-center mb-6 sm:mb-8 pt-4 sm:pt-8 gap-2">
+              <div className="w-10 h-10 sm:w-12 sm:h-12 flex-shrink-0"></div>
+              <h1 className="text-lg sm:text-2xl font-bold text-gray-800 text-center flex-1 whitespace-nowrap">{editingChoreId ? 'Edit Chore' : 'Create Custom'}</h1>
+              <button
+                onClick={() => {
+                  setShowCustomForm(false);
+                  setShowFABMenu(false);
+                  setEditingChoreId(null);
+                }}
+                className="w-10 h-10 sm:w-12 sm:h-12 bg-gray-100 rounded-full flex items-center justify-center text-gray-600 hover:bg-gray-200 transition-colors text-xl sm:text-2xl min-h-[44px] flex-shrink-0"
+              >
+                ×
+              </button>
             </div>
             
             <div className="space-y-4 sm:space-y-6">
