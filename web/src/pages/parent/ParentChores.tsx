@@ -440,12 +440,12 @@ export default function ParentChores() {
 
   return (
     <div className="min-h-screen bg-white pb-20">
-      <div className="max-w-4xl mx-auto p-4">
+      <div className="max-w-4xl mx-auto p-3 sm:p-4">
         {/* Title */}
-        <h1 className="text-2xl font-bold text-gray-800 text-center mb-6 pt-8">Chores</h1>
+        <h1 className="text-xl sm:text-2xl font-bold text-gray-800 text-center mb-4 sm:mb-6 pt-6 sm:pt-8">Chores</h1>
         
         {/* Chores List - 기본 화면에 표시 */}
-        <div className="bg-white rounded-2xl shadow-lg p-6">
+        <div className="bg-white rounded-2xl shadow-lg p-4 sm:p-6">
           <div className="space-y-3">
             {chores.length === 0 ? (
               <div className="text-center py-8">
@@ -453,27 +453,27 @@ export default function ParentChores() {
               </div>
             ) : (
               chores.map((chore) => (
-                <div key={chore.id} className="bg-gray-50 rounded-xl p-4 flex items-center justify-between">
+                <div key={chore.id} className="bg-gray-50 rounded-xl p-3 sm:p-4 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
                   <div 
-                    className="flex-1 cursor-pointer flex items-center gap-4"
+                    className="flex-1 cursor-pointer flex items-center gap-3 sm:gap-4 min-w-0"
                     onClick={() => setSelectedChoreForDetail(chore)}
                   >
-                    <div className="w-12 h-12 bg-orange-100 rounded-2xl flex items-center justify-center flex-shrink-0">
-                      <Icon name={chore.icon || 'chore'} size={24} />
+                    <div className="w-10 h-10 sm:w-12 sm:h-12 bg-orange-100 rounded-2xl flex items-center justify-center flex-shrink-0">
+                      <Icon name={chore.icon || 'chore'} size={20} className="sm:w-6 sm:h-6" />
                     </div>
-                    <div className="flex-1">
-                      <h3 className="text-lg font-bold text-gray-800">{chore.title}</h3>
-                      <p className="text-gray-600 mt-1 flex items-center gap-1">
-                        <Icon name="star" size={16} />
+                    <div className="flex-1 min-w-0">
+                      <h3 className="text-base sm:text-lg font-bold text-gray-800 truncate">{chore.title}</h3>
+                      <p className="text-sm sm:text-base text-gray-600 mt-1 flex items-center gap-1">
+                        <Icon name="star" size={14} className="sm:w-4 sm:h-4" />
                         {chore.points} pts
                       </p>
                     </div>
                   </div>
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 sm:gap-2 flex-shrink-0">
                     <button
                       onClick={() => handleAssignChore(chore.id)}
                       disabled={loading || children.length === 0}
-                      className="px-4 py-2 bg-[#5CE1C6] text-white rounded-full hover:bg-[#4BC9B0] transition-colors disabled:opacity-50 font-semibold"
+                      className="px-3 sm:px-4 py-2 bg-[#5CE1C6] text-white rounded-full hover:bg-[#4BC9B0] transition-colors disabled:opacity-50 font-semibold text-sm sm:text-base min-h-[44px]"
                     >
                       + Assign
                     </button>
@@ -488,18 +488,18 @@ export default function ParentChores() {
                         setShowTemplates(false);
                         setShowFABMenu(false);
                       }}
-                      className="px-3 py-2 text-gray-600 hover:bg-gray-200 rounded-lg transition-colors flex items-center justify-center"
+                      className="w-11 h-11 sm:w-12 sm:h-12 text-gray-600 hover:bg-gray-200 rounded-lg transition-colors flex items-center justify-center min-h-[44px]"
                       title="Edit"
                     >
-                      <Icon name="pencil" size={20} />
+                      <Icon name="pencil" size={18} className="sm:w-5 sm:h-5" />
                     </button>
                     <button
                       onClick={() => handleDeleteChore(chore.id)}
                       disabled={loading}
-                      className="px-3 py-2 text-gray-600 hover:bg-gray-200 rounded-lg transition-colors disabled:opacity-50 flex items-center justify-center"
+                      className="w-11 h-11 sm:w-12 sm:h-12 text-gray-600 hover:bg-gray-200 rounded-lg transition-colors disabled:opacity-50 flex items-center justify-center min-h-[44px]"
                       title="Delete"
                     >
-                      <Icon name="trash" size={20} />
+                      <Icon name="trash" size={18} className="sm:w-5 sm:h-5" />
                     </button>
                   </div>
                 </div>
@@ -510,7 +510,7 @@ export default function ParentChores() {
       </div>
 
       {/* FAB (Floating Action Button) - 오른쪽 하단 */}
-      <div className="fixed bottom-24 right-4 z-50">
+      <div className="fixed bottom-20 sm:bottom-24 right-4 z-50">
         {/* FAB Menu - 위아래 배치, 텍스트는 한 줄로 (absolute positioning으로 플러스 버튼 위치에 영향 없음) */}
         {showFABMenu && (
           <div className="absolute bottom-full right-0 mb-3 flex flex-col gap-3">
@@ -520,7 +520,7 @@ export default function ParentChores() {
                 setShowCustomForm(false);
                 setShowFABMenu(false);
               }}
-              className="px-6 py-3 bg-white rounded-full shadow-lg text-[#5CE1C6] font-semibold hover:bg-[#5CE1C6] hover:text-white active:bg-[#4BC9B0] transition-all duration-200 flex items-center gap-2 whitespace-nowrap cursor-pointer group"
+              className="px-5 sm:px-6 py-3 bg-white rounded-full shadow-lg text-[#5CE1C6] font-semibold hover:bg-[#5CE1C6] hover:text-white active:bg-[#4BC9B0] transition-all duration-200 flex items-center gap-2 whitespace-nowrap cursor-pointer group text-sm sm:text-base min-h-[44px]"
             >
               <span className="group-hover:text-white transition-colors duration-200">Select Template</span>
             </button>
@@ -530,7 +530,7 @@ export default function ParentChores() {
                 setShowCustomForm(true);
                 setShowFABMenu(false);
               }}
-              className="px-6 py-3 bg-white rounded-full shadow-lg text-[#5CE1C6] font-semibold hover:bg-[#5CE1C6] hover:text-white active:bg-[#4BC9B0] transition-all duration-200 flex items-center gap-2 whitespace-nowrap cursor-pointer group"
+              className="px-5 sm:px-6 py-3 bg-white rounded-full shadow-lg text-[#5CE1C6] font-semibold hover:bg-[#5CE1C6] hover:text-white active:bg-[#4BC9B0] transition-all duration-200 flex items-center gap-2 whitespace-nowrap cursor-pointer group text-sm sm:text-base min-h-[44px]"
             >
               <span className="group-hover:text-white transition-colors duration-200">Create Custom</span>
             </button>
@@ -540,7 +540,7 @@ export default function ParentChores() {
         {/* FAB Button */}
         <button
           onClick={() => setShowFABMenu(!showFABMenu)}
-          className="w-16 h-16 bg-[#5CE1C6] text-white rounded-full shadow-lg hover:bg-[#4BC9B0] transition-all flex items-center justify-center text-3xl font-bold"
+          className="w-14 h-14 sm:w-16 sm:h-16 bg-[#5CE1C6] text-white rounded-full shadow-lg hover:bg-[#4BC9B0] transition-all flex items-center justify-center text-2xl sm:text-3xl font-bold"
         >
           {showFABMenu ? '×' : '+'}
         </button>
@@ -549,36 +549,36 @@ export default function ParentChores() {
       {/* Template Selection - 전체 화면 모달 */}
       {showTemplates && !showCustomForm && (
         <div className="fixed inset-0 bg-white z-50 overflow-y-auto">
-          <div className="max-w-4xl mx-auto p-4">
-            <div className="flex justify-between items-center mb-6 pt-8">
+          <div className="max-w-4xl mx-auto p-4 sm:p-6">
+            <div className="flex justify-between items-center mb-4 sm:mb-6 pt-4 sm:pt-8">
               <div className="flex-1"></div>
-              <h1 className="text-2xl font-bold text-gray-800 text-center flex-1">Select Template</h1>
+              <h1 className="text-xl sm:text-2xl font-bold text-gray-800 text-center flex-1">Select Template</h1>
               <div className="flex-1 flex justify-end">
                 <button
                   onClick={() => {
                     setShowTemplates(false);
                     setShowFABMenu(false);
                   }}
-                  className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center text-gray-600 hover:bg-gray-200 transition-colors"
+                  className="w-10 h-10 sm:w-12 sm:h-12 bg-gray-100 rounded-full flex items-center justify-center text-gray-600 hover:bg-gray-200 transition-colors text-xl sm:text-2xl min-h-[44px]"
                 >
                   ×
                 </button>
               </div>
             </div>
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-2 gap-3 sm:gap-4">
               {templates.map((template) => (
                 <div
                   key={template.id}
-                  className="bg-white rounded-xl shadow-md p-3 hover:shadow-lg transition-shadow cursor-pointer"
+                  className="bg-white rounded-xl shadow-md p-3 sm:p-4 hover:shadow-lg transition-shadow cursor-pointer"
                   onClick={() => setSelectedTemplateForDetail(template)}
                 >
                   {/* Icon */}
-                  <div className="w-full h-20 bg-orange-50 rounded-lg flex items-center justify-center mb-2">
-                    <Icon name={getIconName(template.icon)} size={32} />
+                  <div className="w-full h-16 sm:h-20 bg-orange-50 rounded-lg flex items-center justify-center mb-2">
+                    <Icon name={getIconName(template.icon)} size={24} className="sm:w-8 sm:h-8" />
                   </div>
                   
                   {/* Title */}
-                  <h4 className="text-sm font-bold text-gray-800 mb-2 text-center">
+                  <h4 className="text-xs sm:text-sm font-bold text-gray-800 mb-2 text-center line-clamp-2">
                     {getEnglishTitle(template.title)}
                   </h4>
                   
@@ -589,7 +589,7 @@ export default function ParentChores() {
                       handleAddFromTemplate(template);
                     }}
                     disabled={loading}
-                    className="w-full px-2 py-1.5 bg-[#5CE1C6] text-white rounded-lg hover:bg-[#4BC9B0] transition-colors disabled:opacity-50 text-sm font-semibold"
+                    className="w-full px-2 py-2 sm:py-1.5 bg-[#5CE1C6] text-white rounded-lg hover:bg-[#4BC9B0] transition-colors disabled:opacity-50 text-xs sm:text-sm font-semibold min-h-[44px]"
                   >
                     Add
                   </button>
@@ -603,10 +603,10 @@ export default function ParentChores() {
       {/* Custom Form - 전체 화면 모달 */}
       {showCustomForm && (
         <div className="fixed inset-0 bg-white z-50 overflow-y-auto">
-          <div className="max-w-2xl mx-auto p-6">
-            <div className="flex justify-between items-center mb-8 pt-8">
+          <div className="max-w-2xl mx-auto p-4 sm:p-6">
+            <div className="flex justify-between items-center mb-6 sm:mb-8 pt-4 sm:pt-8">
               <div className="flex-1"></div>
-              <h1 className="text-2xl font-bold text-gray-800 text-center flex-1">{editingChoreId ? 'Edit Chore' : 'Create Custom'}</h1>
+              <h1 className="text-xl sm:text-2xl font-bold text-gray-800 text-center flex-1">{editingChoreId ? 'Edit Chore' : 'Create Custom'}</h1>
               <div className="flex-1 flex justify-end">
                 <button
                   onClick={() => {
@@ -614,29 +614,29 @@ export default function ParentChores() {
                     setShowFABMenu(false);
                     setEditingChoreId(null);
                   }}
-                  className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center text-gray-600 hover:bg-gray-200 transition-colors text-2xl"
+                  className="w-10 h-10 sm:w-12 sm:h-12 bg-gray-100 rounded-full flex items-center justify-center text-gray-600 hover:bg-gray-200 transition-colors text-xl sm:text-2xl min-h-[44px]"
                 >
                   ×
                 </button>
               </div>
             </div>
             
-            <div className="space-y-6">
+            <div className="space-y-4 sm:space-y-6">
               {/* Chore Title */}
               <div>
-                <label className="block text-lg font-semibold text-gray-800 mb-3">Chore Title</label>
+                <label className="block text-base sm:text-lg font-semibold text-gray-800 mb-2 sm:mb-3">Chore Title</label>
                 <input
                   type="text"
                   placeholder="e.g., Water the plants"
                   value={newChoreTitle}
                   onChange={(e) => setNewChoreTitle(e.target.value)}
-                  className="w-full px-5 py-4 bg-gray-50 border-2 border-gray-200 rounded-3xl focus:outline-none focus:border-[#5CE1C6] focus:bg-white transition-all text-base"
+                  className="w-full px-4 sm:px-5 py-3 sm:py-4 bg-gray-50 border-2 border-gray-200 rounded-3xl focus:outline-none focus:border-[#5CE1C6] focus:bg-white transition-all text-base min-h-[44px]"
                 />
               </div>
 
               {/* Points */}
               <div>
-                <label className="block text-lg font-semibold text-gray-800 mb-3">Points</label>
+                <label className="block text-base sm:text-lg font-semibold text-gray-800 mb-2 sm:mb-3">Points</label>
                 <input
                   type="number"
                   value={newChorePoints}
@@ -651,27 +651,27 @@ export default function ParentChores() {
                   }}
                   min="1"
                   placeholder="1"
-                  className="w-full px-5 py-4 bg-gray-50 border-2 border-gray-200 rounded-3xl focus:outline-none focus:border-[#5CE1C6] focus:bg-white transition-all text-base placeholder:text-gray-400"
+                  className="w-full px-4 sm:px-5 py-3 sm:py-4 bg-gray-50 border-2 border-gray-200 rounded-3xl focus:outline-none focus:border-[#5CE1C6] focus:bg-white transition-all text-base placeholder:text-gray-400 min-h-[44px]"
                 />
               </div>
 
               {/* Icon Selection */}
               <div>
-                <label className="block text-lg font-semibold text-gray-800 mb-3">Icon</label>
-                <div className="flex items-center gap-4">
-                  <div className="w-16 h-16 bg-orange-100 rounded-3xl flex items-center justify-center">
-                    <Icon name={newChoreIcon} size={32} />
+                <label className="block text-base sm:text-lg font-semibold text-gray-800 mb-2 sm:mb-3">Icon</label>
+                <div className="flex items-center gap-3 sm:gap-4">
+                  <div className="w-14 h-14 sm:w-16 sm:h-16 bg-orange-100 rounded-3xl flex items-center justify-center flex-shrink-0">
+                    <Icon name={newChoreIcon} size={24} className="sm:w-8 sm:h-8" />
                   </div>
                   <button
                     type="button"
                     onClick={() => setShowIconPicker(!showIconPicker)}
-                    className="px-5 py-2.5 bg-[#5CE1C6] text-white rounded-full hover:bg-[#4BC9B0] transition-colors font-semibold flex items-center gap-2"
+                    className="px-4 sm:px-5 py-2.5 bg-[#5CE1C6] text-white rounded-full hover:bg-[#4BC9B0] transition-colors font-semibold flex items-center gap-2 text-sm sm:text-base min-h-[44px]"
                   >
-                    <span className="text-xl">+</span> Select Icon
+                    <span className="text-lg sm:text-xl">+</span> Select Icon
                   </button>
                 </div>
                 {showIconPicker && (
-                  <div className="mt-4 p-5 bg-gray-50 rounded-3xl grid grid-cols-4 gap-4">
+                  <div className="mt-4 p-4 sm:p-5 bg-gray-50 rounded-3xl grid grid-cols-4 gap-3 sm:gap-4">
                     {['chore', 'bed', 'dog', 'broom', 'trash-can', 'dining', 'plant', 'shoe'].map((iconName) => (
                       <button
                         key={iconName}
@@ -680,11 +680,11 @@ export default function ParentChores() {
                           setNewChoreIcon(iconName);
                           setShowIconPicker(false);
                         }}
-                        className={`w-16 h-16 bg-white rounded-3xl flex items-center justify-center hover:bg-[#5CE1C6] hover:bg-opacity-20 transition-all ${
+                        className={`w-14 h-14 sm:w-16 sm:h-16 bg-white rounded-3xl flex items-center justify-center hover:bg-[#5CE1C6] hover:bg-opacity-20 transition-all min-h-[44px] ${
                           newChoreIcon === iconName ? 'ring-4 ring-[#5CE1C6] bg-[#5CE1C6] bg-opacity-20' : ''
                         }`}
                       >
-                        <Icon name={iconName} size={28} />
+                        <Icon name={iconName} size={20} className="sm:w-7 sm:h-7" />
                       </button>
                     ))}
                   </div>
@@ -692,37 +692,37 @@ export default function ParentChores() {
               </div>
 
               {/* Steps Section */}
-              <div className="border-t-2 border-gray-200 pt-6">
-                <div className="flex justify-between items-center mb-4">
-                  <label className="text-lg font-semibold text-gray-800">Steps</label>
+              <div className="border-t-2 border-gray-200 pt-4 sm:pt-6">
+                <div className="flex justify-between items-center mb-3 sm:mb-4">
+                  <label className="text-base sm:text-lg font-semibold text-gray-800">Steps</label>
                   <button
                     type="button"
                     onClick={handleAddStep}
-                    className="px-5 py-2.5 bg-[#5CE1C6] text-white rounded-full hover:bg-[#4BC9B0] transition-colors font-semibold flex items-center gap-2"
+                    className="px-4 sm:px-5 py-2.5 bg-[#5CE1C6] text-white rounded-full hover:bg-[#4BC9B0] transition-colors font-semibold flex items-center gap-2 text-sm sm:text-base min-h-[44px]"
                   >
-                    <span className="text-xl">+</span> Add Step
+                    <span className="text-lg sm:text-xl">+</span> Add Step
                   </button>
                 </div>
                 {newChoreSteps.length === 0 ? (
-                  <p className="text-sm text-gray-500 text-center py-8 bg-gray-50 rounded-3xl">Add steps to help children complete chores more specifically.</p>
+                  <p className="text-xs sm:text-sm text-gray-500 text-center py-6 sm:py-8 bg-gray-50 rounded-3xl px-4">Add steps to help children complete chores more specifically.</p>
                 ) : (
                   <div className="space-y-3">
                     {newChoreSteps.map((step, index) => (
-                      <div key={index} className="flex items-center gap-3">
-                        <span className="text-base font-semibold text-gray-600 w-10 flex items-center justify-center">{step.order}.</span>
+                      <div key={index} className="flex items-center gap-2 sm:gap-3">
+                        <span className="text-sm sm:text-base font-semibold text-gray-600 w-8 sm:w-10 flex items-center justify-center flex-shrink-0">{step.order}.</span>
                         <input
                           type="text"
                           placeholder={`Step ${step.order} description`}
                           value={step.description}
                           onChange={(e) => handleStepChange(index, e.target.value)}
-                          className="flex-1 px-5 py-3 bg-gray-50 border-2 border-gray-200 rounded-3xl focus:outline-none focus:border-[#5CE1C6] focus:bg-white transition-all text-base"
+                          className="flex-1 px-4 sm:px-5 py-3 bg-gray-50 border-2 border-gray-200 rounded-3xl focus:outline-none focus:border-[#5CE1C6] focus:bg-white transition-all text-sm sm:text-base min-h-[44px]"
                         />
                         <button
                           type="button"
                           onClick={() => handleRemoveStep(index)}
-                          className="px-4 py-3 text-gray-600 hover:bg-gray-100 rounded-full transition-colors"
+                          className="w-11 h-11 sm:w-12 sm:h-12 text-gray-600 hover:bg-gray-100 rounded-full transition-colors flex items-center justify-center flex-shrink-0 min-h-[44px]"
                         >
-                          <Icon name="trash" size={20} />
+                          <Icon name="trash" size={18} className="sm:w-5 sm:h-5" />
                         </button>
                       </div>
                     ))}
@@ -734,7 +734,7 @@ export default function ParentChores() {
               <button
                 onClick={handleAddChore}
                 disabled={loading}
-                className="w-full px-6 py-4 bg-[#5CE1C6] text-white rounded-full hover:bg-[#4BC9B0] transition-colors disabled:opacity-50 font-bold text-lg shadow-lg"
+                className="w-full px-6 py-4 bg-[#5CE1C6] text-white rounded-full hover:bg-[#4BC9B0] transition-colors disabled:opacity-50 font-bold text-base sm:text-lg shadow-lg min-h-[44px]"
               >
                 {loading ? 'Saving...' : (editingChoreId ? 'Save' : 'Add')}
               </button>
@@ -746,9 +746,9 @@ export default function ParentChores() {
         {/* Assign Chore Modal with Child Selection */}
         {showChildSelection && selectedChoreForAssign && (
           <div className="fixed inset-0 backdrop-blur-md bg-black/20 flex items-center justify-center z-50 p-4 pointer-events-none">
-            <div className="bg-white rounded-3xl shadow-xl max-w-md w-full p-6 max-h-[80vh] overflow-y-auto pointer-events-auto">
+            <div className="bg-white rounded-3xl shadow-xl max-w-md w-full p-4 sm:p-6 max-h-[85vh] overflow-y-auto pointer-events-auto">
               <div className="flex justify-between items-start mb-4">
-                <h3 className="text-2xl font-bold text-gray-800">Assign Chore</h3>
+                <h3 className="text-xl sm:text-2xl font-bold text-gray-800">Assign Chore</h3>
                 <button
                   onClick={() => {
                     setSelectedChoreForAssign(null);
@@ -756,7 +756,7 @@ export default function ParentChores() {
                     setAssignDueDate('');
                     setShowChildSelection(false);
                   }}
-                  className="text-gray-500 hover:text-gray-700 text-2xl"
+                  className="text-gray-500 hover:text-gray-700 text-xl sm:text-2xl w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center min-h-[44px]"
                 >
                   ×
                 </button>
@@ -772,7 +772,7 @@ export default function ParentChores() {
                     value={assignDueDate}
                     onChange={(e) => setAssignDueDate(e.target.value)}
                     min={new Date().toISOString().split('T')[0]}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#5CE1C6]"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#5CE1C6] text-base min-h-[44px]"
                   />
                 </div>
 
@@ -784,15 +784,15 @@ export default function ParentChores() {
                     {children.map((child) => (
                       <label
                         key={child.id}
-                        className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 cursor-pointer transition-colors"
+                        className="flex items-center gap-3 p-3 sm:p-4 bg-gray-50 rounded-lg hover:bg-gray-100 cursor-pointer transition-colors min-h-[44px]"
                       >
                         <input
                           type="checkbox"
                           checked={selectedChildren.includes(child.id)}
                           onChange={() => handleToggleChildSelection(child.id)}
-                          className="w-5 h-5 accent-[#5CE1C6] rounded focus:ring-2 focus:ring-[#5CE1C6]"
+                          className="w-5 h-5 sm:w-6 sm:h-6 accent-[#5CE1C6] rounded focus:ring-2 focus:ring-[#5CE1C6] flex-shrink-0"
                         />
-                        <span className="text-gray-800 font-medium">{child.nickname}</span>
+                        <span className="text-sm sm:text-base text-gray-800 font-medium">{child.nickname}</span>
                       </label>
                     ))}
                   </div>
@@ -806,14 +806,14 @@ export default function ParentChores() {
                       setAssignDueDate('');
                       setShowChildSelection(false);
                     }}
-                    className="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                    className="flex-1 px-4 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-sm sm:text-base font-semibold min-h-[44px]"
                   >
                     Cancel
                   </button>
                   <button
                     onClick={handleConfirmAssignment}
                     disabled={loading || selectedChildren.length === 0}
-                    className="flex-1 px-4 py-2 bg-[#5CE1C6] text-white rounded-lg hover:bg-[#4BC9B0] transition-colors disabled:opacity-50"
+                    className="flex-1 px-4 py-3 bg-[#5CE1C6] text-white rounded-lg hover:bg-[#4BC9B0] transition-colors disabled:opacity-50 text-sm sm:text-base font-semibold min-h-[44px]"
                   >
                     {loading ? 'Assigning...' : 'Assign'}
                   </button>
@@ -826,12 +826,12 @@ export default function ParentChores() {
       {/* Chore Detail Modal */}
       {selectedChoreForDetail && (
         <div className="fixed inset-0 backdrop-blur-md bg-black/20 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-3xl shadow-xl max-w-md w-full p-6 max-h-[80vh] overflow-y-auto">
+          <div className="bg-white rounded-3xl shadow-xl max-w-md w-full p-4 sm:p-6 max-h-[85vh] overflow-y-auto">
             <div className="flex justify-between items-start mb-4">
-              <h3 className="text-2xl font-bold text-gray-800">Chore Details</h3>
+              <h3 className="text-xl sm:text-2xl font-bold text-gray-800">Chore Details</h3>
               <button
                 onClick={() => setSelectedChoreForDetail(null)}
-                className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center text-gray-600 hover:bg-gray-200 transition-colors"
+                className="w-10 h-10 sm:w-12 sm:h-12 bg-gray-100 rounded-full flex items-center justify-center text-gray-600 hover:bg-gray-200 transition-colors text-xl sm:text-2xl min-h-[44px]"
               >
                 ×
               </button>
@@ -839,14 +839,14 @@ export default function ParentChores() {
             
             <div className="space-y-4">
               {/* Icon and Title */}
-              <div className="flex items-center gap-4">
-                <div className="w-16 h-16 bg-orange-100 rounded-3xl flex items-center justify-center">
-                  <Icon name={selectedChoreForDetail.icon || 'chore'} size={32} />
+              <div className="flex items-center gap-3 sm:gap-4">
+                <div className="w-14 h-14 sm:w-16 sm:h-16 bg-orange-100 rounded-3xl flex items-center justify-center flex-shrink-0">
+                  <Icon name={selectedChoreForDetail.icon || 'chore'} size={24} className="sm:w-8 sm:h-8" />
                 </div>
-                <div className="flex-1">
-                  <h4 className="text-xl font-bold text-gray-800">{selectedChoreForDetail.title}</h4>
-                  <p className="text-gray-600 mt-1 flex items-center gap-1">
-                    <Icon name="star" size={16} />
+                <div className="flex-1 min-w-0">
+                  <h4 className="text-lg sm:text-xl font-bold text-gray-800">{selectedChoreForDetail.title}</h4>
+                  <p className="text-sm sm:text-base text-gray-600 mt-1 flex items-center gap-1">
+                    <Icon name="star" size={14} className="sm:w-4 sm:h-4" />
                     {selectedChoreForDetail.points} pts
                   </p>
                 </div>
@@ -855,12 +855,12 @@ export default function ParentChores() {
               {/* Steps */}
               {selectedChoreForDetail.steps && selectedChoreForDetail.steps.length > 0 && (
                 <div>
-                  <h5 className="text-lg font-semibold text-gray-800 mb-3">Steps</h5>
+                  <h5 className="text-base sm:text-lg font-semibold text-gray-800 mb-3">Steps</h5>
                   <div className="space-y-2">
                     {selectedChoreForDetail.steps.map((step, index) => (
-                      <div key={index} className="flex items-start gap-3 p-3 bg-gray-50 rounded-2xl">
-                        <span className="text-base font-semibold text-gray-600 w-8 flex items-center justify-center">{step.order}.</span>
-                        <p className="flex-1 text-gray-700">{step.description}</p>
+                      <div key={index} className="flex items-start gap-2 sm:gap-3 p-3 bg-gray-50 rounded-2xl">
+                        <span className="text-sm sm:text-base font-semibold text-gray-600 w-6 sm:w-8 flex items-center justify-center flex-shrink-0">{step.order}.</span>
+                        <p className="flex-1 text-sm sm:text-base text-gray-700">{step.description}</p>
                       </div>
                     ))}
                   </div>
@@ -881,7 +881,7 @@ export default function ParentChores() {
                     setShowFABMenu(false);
                     setSelectedChoreForDetail(null);
                   }}
-                  className="flex-1 px-4 py-3 bg-[#5CE1C6] text-white rounded-full hover:bg-[#4BC9B0] transition-colors font-semibold"
+                  className="flex-1 px-4 py-3 bg-[#5CE1C6] text-white rounded-full hover:bg-[#4BC9B0] transition-colors font-semibold text-sm sm:text-base min-h-[44px]"
                 >
                   Edit
                 </button>
@@ -890,7 +890,7 @@ export default function ParentChores() {
                     handleAssignChore(selectedChoreForDetail.id);
                     setSelectedChoreForDetail(null);
                   }}
-                  className="flex-1 px-4 py-3 bg-[#5CE1C6] text-white rounded-full hover:bg-[#4BC9B0] transition-colors font-semibold"
+                  className="flex-1 px-4 py-3 bg-[#5CE1C6] text-white rounded-full hover:bg-[#4BC9B0] transition-colors font-semibold text-sm sm:text-base min-h-[44px]"
                 >
                   Assign
                 </button>
@@ -903,12 +903,12 @@ export default function ParentChores() {
       {/* Template Detail Modal */}
       {selectedTemplateForDetail && (
         <div className="fixed inset-0 backdrop-blur-md bg-black/20 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-3xl shadow-xl max-w-md w-full p-6 max-h-[80vh] overflow-y-auto">
+          <div className="bg-white rounded-3xl shadow-xl max-w-md w-full p-4 sm:p-6 max-h-[85vh] overflow-y-auto">
             <div className="flex justify-between items-start mb-4">
-              <h3 className="text-2xl font-bold text-gray-800">Template Details</h3>
+              <h3 className="text-xl sm:text-2xl font-bold text-gray-800">Template Details</h3>
               <button
                 onClick={() => setSelectedTemplateForDetail(null)}
-                className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center text-gray-600 hover:bg-gray-200 transition-colors"
+                className="w-10 h-10 sm:w-12 sm:h-12 bg-gray-100 rounded-full flex items-center justify-center text-gray-600 hover:bg-gray-200 transition-colors text-xl sm:text-2xl min-h-[44px]"
               >
                 ×
               </button>
@@ -916,14 +916,14 @@ export default function ParentChores() {
             
             <div className="space-y-4">
               {/* Icon and Title */}
-              <div className="flex items-center gap-4">
-                <div className="w-16 h-16 bg-orange-100 rounded-3xl flex items-center justify-center">
-                  <Icon name={getIconName(selectedTemplateForDetail.icon)} size={32} />
+              <div className="flex items-center gap-3 sm:gap-4">
+                <div className="w-14 h-14 sm:w-16 sm:h-16 bg-orange-100 rounded-3xl flex items-center justify-center flex-shrink-0">
+                  <Icon name={getIconName(selectedTemplateForDetail.icon)} size={24} className="sm:w-8 sm:h-8" />
                 </div>
-                <div className="flex-1">
-                  <h4 className="text-xl font-bold text-gray-800">{getEnglishTitle(selectedTemplateForDetail.title)}</h4>
-                  <p className="text-gray-600 mt-1 flex items-center gap-1">
-                    <Icon name="star" size={16} />
+                <div className="flex-1 min-w-0">
+                  <h4 className="text-lg sm:text-xl font-bold text-gray-800">{getEnglishTitle(selectedTemplateForDetail.title)}</h4>
+                  <p className="text-sm sm:text-base text-gray-600 mt-1 flex items-center gap-1">
+                    <Icon name="star" size={14} className="sm:w-4 sm:h-4" />
                     {selectedTemplateForDetail.points} pts
                   </p>
                 </div>
@@ -932,12 +932,12 @@ export default function ParentChores() {
               {/* Steps */}
               {selectedTemplateForDetail.steps && selectedTemplateForDetail.steps.length > 0 && (
                 <div>
-                  <h5 className="text-lg font-semibold text-gray-800 mb-3">Steps</h5>
+                  <h5 className="text-base sm:text-lg font-semibold text-gray-800 mb-3">Steps</h5>
                   <div className="space-y-2">
                     {selectedTemplateForDetail.steps.map((step, index) => (
-                      <div key={index} className="flex items-start gap-3 p-3 bg-gray-50 rounded-2xl">
-                        <span className="text-base font-semibold text-gray-600 w-8 flex items-center justify-center">{step.order}.</span>
-                        <p className="flex-1 text-gray-700">{step.description}</p>
+                      <div key={index} className="flex items-start gap-2 sm:gap-3 p-3 bg-gray-50 rounded-2xl">
+                        <span className="text-sm sm:text-base font-semibold text-gray-600 w-6 sm:w-8 flex items-center justify-center flex-shrink-0">{step.order}.</span>
+                        <p className="flex-1 text-sm sm:text-base text-gray-700">{step.description}</p>
                       </div>
                     ))}
                   </div>
@@ -951,7 +951,7 @@ export default function ParentChores() {
                   setSelectedTemplateForDetail(null);
                 }}
                 disabled={loading}
-                className="w-full px-4 py-3 bg-[#5CE1C6] text-white rounded-full hover:bg-[#4BC9B0] transition-colors disabled:opacity-50 font-semibold"
+                className="w-full px-4 py-3 bg-[#5CE1C6] text-white rounded-full hover:bg-[#4BC9B0] transition-colors disabled:opacity-50 font-semibold text-sm sm:text-base min-h-[44px]"
               >
                 {loading ? 'Adding...' : 'Add to Chores'}
               </button>
