@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
 import ChildTabNav from '../../components/ChildTabNav';
-import Icon from '../../components/Icon';
 
 interface ChildSession {
   childId: string;
