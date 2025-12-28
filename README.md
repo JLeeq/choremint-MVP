@@ -1,34 +1,88 @@
-# ChoreMint MVP
+# Chore Mint - Turn chores into habits with less managing
 
-가족과 함께하는 할 일 관리 앱 (MVP 버전)
+Demo Video: https://youtu.be/gY7bwUDuFWM
 
-## 기술 스택
+Live Demo: https://chore-mint.vercel.app/
+(재배포 후 링크 수정 필요)
 
-- **Frontend**: Vite + React + TypeScript + Tailwind CSS
-- **Backend/Database**: Supabase (Auth, Database, Storage)
-- **Routing**: react-router-dom
-- **PWA**: vite-plugin-pwa (Service Worker, Offline Support)
+Forked From: https://github.com/seo1120/choremint-MVP
 
-## 프로젝트 구조
+
+## Problem
+
+1. **High management burden for parents** → Easily managed through the app
+2. **Inconsistent reward system** → Motivating & consistent rewards
+3. **Chores lack educational value** → Habit and time management development
+
+
+## Tech Stack
+
+Frontend: Vite + React + TypeScript + Tailwind CSS
+Backend: Supabase (Auth, Database, Storage, Realtime)
+PWA: vite-plugin-pwa
+Deployment: Vercel
+
+## Project Structure
 
 ```
 ver4/
-├── web/                    # Vite React 앱
+├── web/                    # Vite React app
 │   ├── src/
 │   │   ├── lib/
-│   │   │   └── supabase.ts      # Supabase 클라이언트
+│   │   │   └── supabase.ts      # Supabase Client
 │   │   ├── pages/
-│   │   │   ├── App.tsx          # Google 로그인 페이지
-│   │   │   ├── Dashboard.tsx   # 부모 대시보드 (가족 코드, 자녀 관리, 승인)
-│   │   │   └── ChildUpload.tsx  # 자녀 사진 업로드 페이지
-│   │   ├── main.tsx             # 라우팅 설정
+│   │   │   ├── App.tsx          # Google login page
+│   │   │   ├── Dashboard.tsx   # parents Dashboard (Family Code, 자녀 관리, 승인)
+│   │   │   └── ChildUpload.tsx  # Children Photo Upload Page
+│   │   ├── main.tsx             # Routing Setting
 │   │   └── index.css            # Tailwind CSS
 │   ├── .env.local              # 환경 변수 (Supabase URL/Key)
 │   └── package.json
 └── supabase/
     └── sql/
-        └── init.sql            # 데이터베이스 스키마, RLS, 트리거, RPC
+        └── init.sql            # Database Schema , RLS, Trigger, RPC
 ```
+
+
+## Data Model Design
+
+```
+families (family)
+├─ parent_id (parent)
+└─ family_code (for child login)
+
+children (child)
+├─ family_id
+├─ nickname, pin
+├─ points (calculated value, fetched from child_points_view)
+└─ active (for soft delete)
+
+chores (chore)
+├─ family_id
+├─ title, points, steps (JSONB)
+└─ active
+
+chore_assignments (assignment)
+├─ chore_id, child_id, due_date
+└─ status (todo, done, expired)
+
+submissions (submission)
+├─ child_id, chore_id, photo_url
+└─ status (pending, approved, rejected)
+
+points_ledger (points history)
+├─ child_id, delta, reason
+└─ submission_id (reference)
+```
+
+### Key Decisions:
+1. Points not stored in children table: Calculated in real-time via child_points_view
+- Reason: Prevents synchronization issues with points_ledger
+- Trade-off: Query performance vs data consistency → Chose consistency
+2. JSONB for steps storage: Structured step-by-step instructions
+- Reason: Enables future step-by-step checklist feature expansion
+- Trade-off: Normalization vs flexibility → Chose flexibility
+
 
 ## 주요 기능
 
@@ -63,18 +117,8 @@ Supabase 프로젝트 설정 → API에서 URL과 anon key를 복사하세요.
 3. Google Cloud Console에서 OAuth 클라이언트 생성
 4. Client ID와 Client Secret을 Supabase에 입력
 
-### 4. PWA 아이콘 생성 (선택사항)
 
-PWA 아이콘을 생성하려면 `web/public/` 폴더에 다음 파일들을 추가하세요:
-- `pwa-64x64.png`
-- `pwa-192x192.png`
-- `pwa-512x512.png`
-- `maskable-icon-512x512.png`
-- `apple-touch-icon.png` (180x180)
-
-온라인 도구 사용: [PWA Asset Generator](https://www.pwabuilder.com/imageGenerator)
-
-### 5. 의존성 설치 및 실행
+### 4. 의존성 설치 및 실행
 
 ```bash
 cd web
@@ -82,7 +126,7 @@ npm install
 npm run dev
 ```
 
-### 6. PWA 빌드
+### 5. PWA 빌드
 
 ```bash
 npm run build
@@ -98,17 +142,6 @@ npm run preview  # 로컬에서 빌드된 앱 테스트
 3. **자녀**: `/upload` 경로에서 PIN 입력 후 사진 업로드
 4. **승인**: 대시보드에서 승인 대기 목록을 확인하고 승인 버튼 클릭 → 자동으로 +10점 추가
 
-## 데이터베이스 구조
-
-- **families**: 가족 정보 (parent_id, family_code)
-- **children**: 자녀 정보 (family_id, nickname, pin, points)
-- **submissions**: 제출물 (child_id, family_id, photo_url, status)
-
-## 주요 트리거 및 함수
-
-- `ensure_family_exists()`: 부모 로그인 시 자동으로 가족 생성
-- `update_child_points()`: 제출물 승인 시 자동으로 +10점 추가
-- `generate_family_code()`: 고유한 6자리 가족 코드 생성
 
 ## PWA 기능
 
@@ -117,4 +150,138 @@ npm run preview  # 로컬에서 빌드된 앱 테스트
 - **앱처럼 사용**: Standalone 모드로 네이티브 앱처럼 동작
 - **자동 업데이트**: 새 버전 자동 감지 및 업데이트
 - **Supabase 캐싱**: 네트워크 우선 전략으로 API 응답 캐싱
+
+## Key Decisions & Reasoning
+
+### 1. Soft Delete vs Hard Delete
+
+**Prompt**: 
+> "When deleting a child, don't actually delete from DB. Instead, set child to inactive or soft delete state. Maintain existing data structure, API, and state management logic as much as possible. No cascade delete, no DB schema changes ❌"
+
+**Decision**:
+-- Add active BOOLEAN column to children table
+ALTER TABLE children ADD COLUMN IF NOT EXISTS active BOOLEAN DEFAULT true;
+**Reasoning**:
+- **Data Recovery**: Accidental deletions can be recovered by setting `active=true`
+- **History Preservation**: Past chores, submissions, and points_ledger data maintain referential integrity
+- **Development Speed**: Minimal changes to existing RLS policies and query logic (only add `WHERE active=true`)
+
+**Trade-off**:
+- ✅ **Pros**: Data safety, recoverability, existing logic preserved
+- ❌ **Cons**: "Deleted" data accumulates in DB (but acceptable for family app context)
+- **Decision**: Prioritized data safety and development speed over scalability
+
+---
+
+### 2. Code-Based Authentication for Children
+
+**Problem**: User research revealed that children don't have email accounts.
+
+**Decision**: 
+- Parents register children under their account
+- Each child is assigned a unique PIN code for login
+- Children log in using family code + PIN instead of email/password
+
+**Reasoning**:
+- **User Reality**: Matches actual usage patterns (children typically don't have emails)
+- **Simplicity**: No need for child email verification or password management
+- **Security**: PIN-based login is sufficient for family context
+
+**Trade-off**:
+- ✅ **Pros**: User-friendly, matches real-world usage, simpler implementation
+- ❌ **Cons**: Less secure than email-based auth (but acceptable for family app)
+- **Decision**: User experience over enterprise-level security
+
+---
+
+### 3. PWA Implementation: Instead of Native App
+
+**Prompt**:
+> "Must work like an app on mobile. But App Store review takes time"
+
+**Decision**:
+- React app + `vite-plugin-pwa` for PWA implementation
+- Service Worker for offline caching
+- `manifest.json` for home screen installation
+
+**Reasoning**:
+- **Deployment Speed**: Immediate deployment without App Store review
+- **Cross-Platform**: iOS/Android support simultaneously
+- **Update Flexibility**: Instant updates via server deployment
+
+**Trade-off**:
+- ✅ **Pros**: Deployment speed, cross-platform, update flexibility
+- ❌ **Cons**: Native feature limitations (push notifications via Web Push API), no App Store presence
+- **Decision**: Fast MVP deployment over perfect native experience
+
+---
+
+### 4. Template System: Reusable Chores
+
+**Prompt**:
+> "Parents shouldn't create the same chores every time. Should be able to select from templates or create custom ones"
+
+**Decision**:l
+-- Global chore templates table
+CREATE TABLE chore_templates (
+  id UUID PRIMARY KEY,
+  title TEXT NOT NULL,
+  points INTEGER NOT NULL,
+  steps JSONB NOT NULL,  -- Step-by-step instructions
+  icon TEXT,
+  category TEXT
+);
+
+-- Family-specific actual chores
+CREATE TABLE chores (
+  id UUID PRIMARY KEY,
+  family_id UUID NOT NULL,
+  title TEXT NOT NULL,
+  points INTEGER NOT NULL,
+  steps JSONB,  -- Copied from template
+  icon TEXT,
+  active BOOLEAN DEFAULT true
+);**Reasoning**:
+- **Reusability**: Templates like "Clean Room" can be used by multiple families
+- **Customization**: Can select from templates or create completely new ones
+- **Extensibility**: Foundation for future community template sharing feature
+
+**Trade-off**:
+- ✅ **Pros**: User convenience, extensibility
+- ❌ **Cons**: Template management complexity (but sufficient for MVP)
+- **Decision**: Basic template system over full marketplace from the start
+
+---
+
+### 5. Celebration Screen: Immediate Feedback on Goal Achievement
+
+**Prompt**:
+> "When child completes a mission, show this image on screen. Goal points must be reflected"
+
+**Decision**:
+- Automatic Celebration modal display when goal points are reached
+- Trophy image + "YOU'RE GETTING CLOSER!" message
+- Visual progress bar feedback
+
+**Reasoning**:
+- **Immediacy**: Visual reward simultaneous with point accumulation
+- **Motivation**: Clear display of remaining points to goal
+- **Gamification**: Core value of "fun" in the app
+
+**Trade-off**:
+- ✅ **Pros**: Enhanced user experience, motivation boost
+- ❌ **Cons**: Additional image resources (but solved with PWA caching)
+- **Decision**: User emotional connection over feature completeness
+
+### 6. Data Model Design
+
+**Core Tables**:
+**Reasoning**:
+- Data Recovery: Accidental deletions can be recovered by setting active=true
+- History Preservation: Past chores, submissions, and points_ledger data maintain referential integrity
+- Development Speed: Minimal changes to existing RLS policies and query logic (only add WHERE active=true)
+**Trade-off**:
+- ✅ Pros: Data safety, recoverability, existing logic preserved
+- ❌ Cons: "Deleted" data accumulates in DB (but acceptable for family app context)
+- Decision: Prioritized data safety and development speed over scalability
 
