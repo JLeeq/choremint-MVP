@@ -46,6 +46,8 @@ export default function ChildToday() {
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [showCelebration, setShowCelebration] = useState(false);
   const [_earnedPoints, setEarnedPoints] = useState(0);
+  const [currentGoalNumber, setCurrentGoalNumber] = useState(1);
+  const [characterSlotLevel, setCharacterSlotLevel] = useState(1);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -62,6 +64,8 @@ export default function ChildToday() {
         loadAssignments(parsedSession.childId);
       // 초기 로드 시 최신 포인트 가져오기
       loadLatestPoints(parsedSession.childId);
+      // 캐릭터 데이터 로드
+      loadCharacterData(parsedSession.childId);
       
       // 자녀 로그인 시 푸시 알림 구독
       initializePushNotifications(parsedSession.childId, true);
@@ -140,10 +144,48 @@ export default function ChildToday() {
       )
       .subscribe();
 
+    // Subscribe to character_slots updates
+    const characterSlotsChannel = supabase
+      .channel('child-character-slots-updates')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'character_slots',
+          filter: `child_id=eq.${parsedSession.childId}`,
+        },
+        () => {
+          console.log('Character slots updated');
+          loadCharacterData(parsedSession.childId);
+        }
+      )
+      .subscribe();
+
+    // Subscribe to progress_tracker updates
+    const progressTrackerChannel = supabase
+      .channel('child-progress-tracker-updates')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'character_progress_tracker',
+          filter: `child_id=eq.${parsedSession.childId}`,
+        },
+        () => {
+          console.log('Progress tracker updated');
+          loadCharacterData(parsedSession.childId);
+        }
+      )
+      .subscribe();
+
     return () => {
       supabase.removeChannel(assignmentsChannel);
       supabase.removeChannel(submissionsChannel);
       supabase.removeChannel(pointsLedgerChannel);
+      supabase.removeChannel(characterSlotsChannel);
+      supabase.removeChannel(progressTrackerChannel);
     };
   }, [navigate]);
 
@@ -308,10 +350,57 @@ export default function ChildToday() {
     }
   };
 
+  const loadCharacterData = async (childId: string) => {
+    try {
+      // 현재 목표 번호 가져오기
+      const { data: trackerData } = await supabase
+        .from('character_progress_tracker')
+        .select('current_goal_number')
+        .eq('child_id', childId)
+        .single();
+
+      if (trackerData) {
+        const goalNumber = trackerData.current_goal_number;
+        setCurrentGoalNumber(goalNumber);
+
+        // 해당 슬롯의 레벨 가져오기
+        const { data: slotData } = await supabase
+          .from('character_slots')
+          .select('level')
+          .eq('child_id', childId)
+          .eq('slot_number', goalNumber)
+          .single();
+
+        if (slotData) {
+          setCharacterSlotLevel(slotData.level || 1);
+          setLevel(slotData.level || 1);
+        } else {
+          setCharacterSlotLevel(1);
+          setLevel(1);
+        }
+      } else {
+        setCurrentGoalNumber(1);
+        setCharacterSlotLevel(1);
+        setLevel(1);
+      }
+    } catch (error) {
+      console.error('Error loading character data:', error);
+      setCurrentGoalNumber(1);
+      setCharacterSlotLevel(1);
+      setLevel(1);
+    }
+  };
+
+  // 캐릭터 이미지 경로 생성
+  const getCharacterImage = (slotNumber: number, level: number) => {
+    return `/icons/characters/${slotNumber}-${level}.png`;
+  };
+
   const calculateLevel = (points: number, goalPoints: number | null) => {
     // 레벨 계산: 100포인트마다 레벨 1 증가
     const newLevel = Math.floor(points / 100) + 1;
-    setLevel(newLevel);
+    // setLevel은 캐릭터 슬롯 레벨로 덮어쓰기 때문에 주석 처리
+    // setLevel(newLevel);
 
     // 캐릭터 기분을 목표치 대비 퍼센트로 결정
     if (goalPoints && goalPoints > 0) {
@@ -495,123 +584,21 @@ export default function ChildToday() {
                 <span className="text-sm font-semibold text-gray-700">Level {level}</span>
               </div>
             </div>
-            {/* Character SVG (3D-like appearance) */}
+            {/* Character Image */}
             <div className="relative">
               <div className={`transform transition-all duration-500 ${
                 characterMood === 'happy' ? 'scale-110 animate-bounce' : 
                 characterMood === 'normal' ? 'scale-100' : 'scale-90'
               }`}>
-                <svg
-                  width="80"
-                  height="80"
-                  viewBox="0 0 200 200"
-                  className="drop-shadow-lg"
-                >
-                  {/* Body (3D sphere effect) */}
-                  <defs>
-                    <radialGradient id="bodyGradient" cx="50%" cy="30%">
-                      <stop offset="0%" stopColor="#FFD700" />
-                      <stop offset="50%" stopColor="#FFA500" />
-                      <stop offset="100%" stopColor="#FF8C00" />
-                    </radialGradient>
-                    <radialGradient id="eyeGradient" cx="50%" cy="30%">
-                      <stop offset="0%" stopColor="#FFFFFF" />
-                      <stop offset="100%" stopColor="#E0E0E0" />
-                    </radialGradient>
-                  </defs>
-                  
-                  {/* Body circle with 3D effect */}
-                  <circle
-                    cx="100"
-                    cy="120"
-                    r="60"
-                    fill="url(#bodyGradient)"
-                    className="drop-shadow-xl"
-                  />
-                  
-                  {/* Highlight for 3D effect */}
-                  <ellipse
-                    cx="85"
-                    cy="100"
-                    rx="25"
-                    ry="30"
-                    fill="rgba(255, 255, 255, 0.4)"
-                  />
-                  
-                  {/* Eyes */}
-                  <circle
-                    cx="85"
-                    cy="110"
-                    r="8"
-                    fill="url(#eyeGradient)"
-                  />
-                  <circle
-                    cx="115"
-                    cy="110"
-                    r="8"
-                    fill="url(#eyeGradient)"
-                  />
-                  
-                  {/* Pupils */}
-                  <circle
-                    cx={characterMood === 'happy' ? '88' : '85'}
-                    cy="110"
-                    r="4"
-                    fill="#000"
-                  />
-                  <circle
-                    cx={characterMood === 'happy' ? '118' : '115'}
-                    cy="110"
-                    r="4"
-                    fill="#000"
-                  />
-                  
-                  {/* Mouth */}
-                  {characterMood === 'happy' ? (
-                    <path
-                      d="M 85 125 Q 100 140 115 125"
-                      stroke="#000"
-                      strokeWidth="3"
-                      fill="none"
-                      strokeLinecap="round"
-                    />
-                  ) : characterMood === 'normal' ? (
-                    <line
-                      x1="90"
-                      y1="125"
-                      x2="110"
-                      y2="125"
-                      stroke="#000"
-                      strokeWidth="3"
-                      strokeLinecap="round"
-                    />
-                  ) : (
-                    <path
-                      d="M 85 130 Q 100 120 115 130"
-                      stroke="#000"
-                      strokeWidth="3"
-                      fill="none"
-                      strokeLinecap="round"
-                    />
-                  )}
-                  
-                  {/* Decorative elements based on level */}
-                  {level >= 3 && (
-                    <circle
-                      cx="100"
-                      cy="80"
-                      r="15"
-                      fill="#FFD700"
-                      opacity="0.6"
-                    />
-                  )}
-                  {level >= 5 && (
-                    <>
-                      <circle cx="70" cy="130" r="8" fill="#FF69B4" opacity="0.7" />
-                      <circle cx="130" cy="130" r="8" fill="#FF69B4" opacity="0.7" />
-                    </>
-                  )}
-                </svg>
+                <img
+                  src={getCharacterImage(currentGoalNumber, characterSlotLevel)}
+                  alt={`Character Level ${characterSlotLevel}`}
+                  className="w-20 h-20 object-contain drop-shadow-lg"
+                  onError={(e) => {
+                    // 이미지 로드 실패 시 기본 이미지 사용
+                    (e.target as HTMLImageElement).src = `/icons/characters/${currentGoalNumber}-1.png`;
+                  }}
+                />
               </div>
             </div>
           </div>

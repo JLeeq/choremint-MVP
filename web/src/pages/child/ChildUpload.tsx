@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
 import ChildTabNav from '../../components/ChildTabNav';
@@ -33,6 +33,12 @@ export default function ChildUpload() {
   const [completedSteps, setCompletedSteps] = useState<Set<number>>(new Set());
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  
+  // 카메라 관련 state
+  const [isCameraOpen, setIsCameraOpen] = useState(false);
+  const [stream, setStream] = useState<MediaStream | null>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
     const session = localStorage.getItem('child_session');
@@ -99,6 +105,84 @@ export default function ChildUpload() {
     }
     setCompletedSteps(newCompleted);
   };
+
+  // 카메라 열기
+  const handleOpenCamera = async () => {
+    try {
+      const mediaStream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: 'environment' }, // 후면 카메라 우선
+        audio: false
+      });
+      setStream(mediaStream);
+      setIsCameraOpen(true);
+      
+      if (videoRef.current) {
+        videoRef.current.srcObject = mediaStream;
+      }
+    } catch (err: any) {
+      console.error('Error accessing camera:', err);
+      setError('카메라에 접근할 수 없습니다. 카메라 권한을 확인해주세요.');
+    }
+  };
+
+  // 카메라 닫기
+  const handleCloseCamera = () => {
+    if (stream) {
+      stream.getTracks().forEach(track => track.stop());
+      setStream(null);
+    }
+    setIsCameraOpen(false);
+  };
+
+  // 사진 촬영
+  const handleCapturePhoto = () => {
+    if (!videoRef.current || !canvasRef.current) return;
+
+    const video = videoRef.current;
+    const canvas = canvasRef.current;
+    const context = canvas.getContext('2d');
+
+    if (!context) return;
+
+    // canvas 크기를 video 크기에 맞춤
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+
+    // video에서 이미지 캡처
+    context.drawImage(video, 0, 0);
+
+    // canvas를 blob으로 변환
+    canvas.toBlob((blob) => {
+      if (!blob) return;
+
+      // blob을 File 객체로 변환
+      const file = new File([blob], `photo-${Date.now()}.jpg`, {
+        type: 'image/jpeg',
+        lastModified: Date.now()
+      });
+
+      setSelectedFile(file);
+      
+      // 미리보기 생성
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+
+      // 카메라 닫기
+      handleCloseCamera();
+    }, 'image/jpeg', 0.9);
+  };
+
+  // 컴포넌트 언마운트 시 스트림 정리
+  useEffect(() => {
+    return () => {
+      if (stream) {
+        stream.getTracks().forEach(track => track.stop());
+      }
+    };
+  }, [stream]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -228,14 +312,72 @@ export default function ChildUpload() {
             <label className="block text-sm font-semibold text-gray-700 mb-3">
               Select Photo
             </label>
+            
+            {/* 카메라 버튼과 파일 선택 버튼 */}
+            <div className="flex gap-3 mb-3">
+              <button
+                type="button"
+                onClick={handleOpenCamera}
+                className="flex-1 px-4 py-3 bg-[#5CE1C6] text-white rounded-xl hover:bg-[#4BC9B0] transition-colors font-semibold flex items-center justify-center gap-2"
+              >
+                <Icon name="camera" size={20} />
+                카메라로 촬영
+              </button>
+              <label className="flex-1 px-4 py-3 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 transition-colors font-semibold flex items-center justify-center gap-2 cursor-pointer">
+                <Icon name="plus" size={20} />
+                갤러리에서 선택
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleFileChange}
+                  className="hidden"
+                />
+              </label>
+            </div>
+
+            {/* 기존 파일 입력 (숨김 처리) */}
             <input
               type="file"
               accept="image/*"
               onChange={handleFileChange}
               className="w-full px-4 py-3 bg-white border-2 border-[#5CE1C6] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#5CE1C6] focus:border-[#4BC9B0] transition-all file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-[#5CE1C6]/10 file:text-[#5CE1C6] hover:file:bg-[#5CE1C6]/20"
-              required
+              style={{ display: 'none' }}
             />
           </div>
+
+          {/* 카메라 모달 */}
+          {isCameraOpen && (
+            <div className="fixed inset-0 bg-black z-50 flex flex-col">
+              <div className="flex-1 relative">
+                <video
+                  ref={videoRef}
+                  autoPlay
+                  playsInline
+                  className="w-full h-full object-cover"
+                />
+                <canvas ref={canvasRef} className="hidden" />
+              </div>
+              
+              <div className="p-6 bg-black/50">
+                <div className="flex gap-4 justify-center">
+                  <button
+                    type="button"
+                    onClick={handleCloseCamera}
+                    className="px-6 py-3 bg-gray-600 text-white rounded-xl hover:bg-gray-700 transition-colors font-semibold"
+                  >
+                    취소
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleCapturePhoto}
+                    className="px-6 py-3 bg-[#5CE1C6] text-white rounded-xl hover:bg-[#4BC9B0] transition-colors font-semibold"
+                  >
+                    촬영
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* Preview Card */}
           {preview && (
