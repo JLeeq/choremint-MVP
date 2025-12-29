@@ -549,7 +549,7 @@ export default function ChildToday() {
 
   if (loading || !childSession) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-white pb-20">
+      <div className="min-h-screen flex items-center justify-center bg-[#E6F7F2] pb-20">
         <p className="text-gray-600">Loading...</p>
       </div>
     );
@@ -636,7 +636,7 @@ export default function ChildToday() {
         </div>
       )}
 
-      <div className="min-h-screen bg-white pb-20">
+      <div className="min-h-screen bg-[#E6F7F2] pb-20">
         {/* Confetti effect */}
         {showConfetti && (
           <div className="fixed inset-0 pointer-events-none z-50 flex items-center justify-center">
@@ -710,7 +710,7 @@ export default function ChildToday() {
           </div>
 
           {/* Character Section */}
-          <div className="bg-gradient-to-br from-[#E6F9F5] to-[#D0F4ED] rounded-3xl shadow-xl p-6">
+          <div className="bg-white rounded-3xl shadow-sm p-6 border border-white/50">
           <div className="flex items-center justify-between mb-4">
             <div>
               <h2 className="text-lg font-bold text-gray-800 mb-1">My Character</h2>
@@ -740,16 +740,16 @@ export default function ChildToday() {
           
           {/* Goal Points & Reward */}
           {goalPoints && (
-            <div className="mt-4 p-4 bg-gradient-to-br from-[#FF7F7F] to-[#FFB6C1] rounded-2xl text-white">
+            <div className="mt-4 p-4 bg-white rounded-2xl shadow-sm border border-white/50">
               <div className="flex items-center justify-between mb-2">
-                <span className="text-sm font-semibold">Goal Points</span>
-                <span className="text-lg font-bold">
+                <span className="text-sm font-semibold text-gray-700">Goal Points</span>
+                <span className="text-lg font-bold text-gray-800">
                   {childSession?.points || 0} / {goalPoints} pts
                 </span>
               </div>
-              <div className="w-full bg-white/30 rounded-full h-3 mb-3">
+              <div className="w-full bg-gray-100 rounded-full h-3 mb-3">
                 <div
-                  className="bg-white rounded-full h-3 transition-all duration-500"
+                  className="bg-gradient-to-r from-[#5CE1C6] to-[#4ECDC4] rounded-full h-3 transition-all duration-500"
                   style={{ 
                     width: `${Math.min(100, ((childSession?.points || 0) / goalPoints) * 100)}%` 
                   }}
@@ -757,13 +757,13 @@ export default function ChildToday() {
               </div>
               {reward && (
                 <div className="text-center">
-                  <p className="text-xs opacity-90 mb-1">Reward when you reach the goal:</p>
-                  <p className="text-lg font-bold">🎁 {reward}</p>
+                  <p className="text-xs text-gray-600 mb-1">Reward when you reach the goal:</p>
+                  <p className="text-lg font-bold text-gray-800">🎁 {reward}</p>
                 </div>
               )}
               {childSession && childSession.points >= goalPoints && (
                 <div className="mt-2 text-center">
-                  <p className="text-sm font-bold animate-pulse">🎉 Goal Achieved! 🎉</p>
+                  <p className="text-sm font-bold text-[#5CE1C6] animate-pulse">🎉 Goal Achieved! 🎉</p>
                 </div>
               )}
             </div>
@@ -772,8 +772,8 @@ export default function ChildToday() {
 
         {/* Today's Chores */}
         {assignments.length === 0 ? (
-          <div className="bg-white rounded-3xl shadow-xl p-8 text-center">
-              <p className="text-gray-500 text-lg">No chores today! 🎉</p>
+          <div className="bg-white rounded-3xl shadow-sm p-8 text-center border border-white/50">
+              <p className="text-gray-600 text-lg">No chores today! 🎉</p>
           </div>
         ) : (
           <div className="grid grid-cols-2 gap-4">
@@ -785,10 +785,10 @@ export default function ChildToday() {
                 <div
                   key={assignment.id}
                   onClick={() => handleChoreClick(assignment)}
-                  className="bg-white rounded-2xl shadow-lg p-4 hover:shadow-xl transition-shadow cursor-pointer"
+                  className="bg-white rounded-3xl shadow-sm p-4 hover:shadow-md transition-shadow cursor-pointer border border-white/50"
                 >
                   <div className="text-center">
-                    <div className="w-16 h-16 bg-orange-100 rounded-xl flex items-center justify-center mx-auto mb-2">
+                    <div className="w-16 h-16 bg-[#E6F7F2] rounded-xl flex items-center justify-center mx-auto mb-2">
                       {assignment.chore.icon && !assignment.chore.icon.match(/[\u{1F300}-\u{1F9FF}]/u) ? (
                         <Icon name={assignment.chore.icon} size={32} />
                       ) : assignment.chore.icon ? (
@@ -801,7 +801,7 @@ export default function ChildToday() {
                       {assignment.chore.title}
                     </h3>
                     <div className="flex items-center justify-center gap-1 mb-2">
-                      <Icon name="star" size={16} className="text-yellow-500" />
+                      <Icon name="star" size={16} className="text-[#FFB84D]" />
                       <span className="text-sm font-semibold text-gray-700">
                         {assignment.chore.points} pts
                       </span>
@@ -818,8 +818,8 @@ export default function ChildToday() {
 
         {/* Chore Detail Modal */}
         {showChoreDetail && selectedAssignment && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-3xl shadow-xl max-w-md w-full p-6 max-h-[80vh] overflow-y-auto">
+          <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-3xl shadow-lg max-w-md w-full p-6 max-h-[80vh] overflow-y-auto border border-white/50">
               <div className="flex justify-between items-start mb-4">
                 <div>
                   <h3 className="text-2xl font-bold text-gray-800 mb-2">
@@ -848,7 +848,7 @@ export default function ChildToday() {
                 <div className="space-y-3 mb-6">
                   <h4 className="font-semibold text-gray-800 mb-2">Steps:</h4>
                   {selectedAssignment.chore.steps.map((step: any, index: number) => (
-                    <div key={index} className="flex items-start gap-3 p-3 bg-gray-50 rounded-lg">
+                    <div key={index} className="flex items-start gap-3 p-3 bg-[#E6F7F2] rounded-xl">
                       <span className="font-bold text-[#5CE1C6] w-6">{step.order}.</span>
                       <p className="text-gray-700 flex-1">{step.description}</p>
                     </div>
@@ -874,11 +874,11 @@ export default function ChildToday() {
         {/* Settings Modal */}
         {showSettingsModal && (
           <div 
-            className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+            className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50 p-4"
             onClick={() => setShowSettingsModal(false)}
           >
             <div 
-              className="bg-white rounded-3xl shadow-xl max-w-md w-full p-6 max-h-[90vh] overflow-y-auto"
+              className="bg-white rounded-3xl shadow-lg max-w-md w-full p-6 max-h-[90vh] overflow-y-auto border border-white/50"
               onClick={(e) => e.stopPropagation()}
             >
               {/* Header */}
@@ -959,7 +959,7 @@ export default function ChildToday() {
                 </div>
 
                 {/* Points Display */}
-                <div className="bg-gray-50 rounded-lg p-4">
+                <div className="bg-[#E6F7F2] rounded-xl p-4">
                   <div className="flex justify-between items-center mb-2">
                     <span className="text-gray-600">Total Points</span>
                     <span className="text-2xl font-bold text-blue-600 flex items-center gap-1">
@@ -972,7 +972,7 @@ export default function ChildToday() {
                 {/* Logout Button */}
                 <button
                   onClick={handleLogout}
-                  className="w-full px-6 py-3 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors font-bold"
+                  className="w-full px-6 py-3 bg-gray-400 text-white rounded-xl hover:bg-gray-500 transition-colors font-bold shadow-sm"
                 >
                   Logout
                 </button>

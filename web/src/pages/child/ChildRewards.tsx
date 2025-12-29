@@ -163,17 +163,17 @@ export default function ChildRewards() {
 
   if (loading || !childSession) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-white pb-20">
+      <div className="min-h-screen flex items-center justify-center bg-[#E6F7F2] pb-20">
         <p className="text-gray-600">Loading...</p>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-white pb-20">
+    <div className="min-h-screen bg-[#E6F7F2] pb-20">
       <div className="max-w-md mx-auto p-4">
         {/* Points Summary */}
-        <div className="bg-white rounded-3xl shadow-xl p-6 mb-4">
+        <div className="bg-white rounded-3xl shadow-sm p-6 mb-4 border border-white/50">
           <div className="text-center">
             <h1 className="text-3xl font-bold text-gray-800 mb-2 flex items-center justify-center gap-2">
               <Icon name="star" size={24} className="md:w-8 md:h-8" />
@@ -185,11 +185,11 @@ export default function ChildRewards() {
 
         {/* Goal History */}
         {goalHistory.length > 0 && (
-          <div className="bg-white rounded-3xl shadow-xl p-6 mb-4">
+          <div className="bg-white rounded-3xl shadow-sm p-6 mb-4 border border-white/50">
             <h2 className="text-xl font-bold text-gray-800 mb-4">Goal History</h2>
             <div className="space-y-3">
               {goalHistory.map((goal) => (
-                <div key={goal.id} className="flex justify-between items-center p-4 bg-gray-50 rounded-lg">
+                <div key={goal.id} className="flex justify-between items-center p-4 bg-[#E6F7F2] rounded-xl">
                   <div>
                     <p className="font-medium text-gray-800">
                       Goal Achieved! 🎉
@@ -213,14 +213,14 @@ export default function ChildRewards() {
         )}
 
         {/* Points History */}
-        <div className="bg-white rounded-3xl shadow-xl p-6">
+        <div className="bg-white rounded-3xl shadow-sm p-6 border border-white/50">
           <h2 className="text-xl font-bold text-gray-800 mb-4">Points History</h2>
           {pointsHistory.length === 0 ? (
             <p className="text-gray-500 text-center py-8">No points history yet.</p>
           ) : (
             <div className="space-y-3">
               {pointsHistory.map((entry) => (
-                <div key={entry.id} className="flex justify-between items-center p-4 bg-gray-50 rounded-lg">
+                <div key={entry.id} className="flex justify-between items-center p-4 bg-[#E6F7F2] rounded-xl">
                   <div>
                     <p className="font-medium text-gray-800">
                       {entry.reason === 'chore_approved' ? 'Chore Completed' : 
@@ -231,7 +231,7 @@ export default function ChildRewards() {
                       {new Date(entry.created_at).toLocaleString()}
                     </p>
                   </div>
-                  <span className={`text-lg font-bold ${entry.delta > 0 ? 'text-green-600' : 'text-red-600'}`}>
+                  <span className={`text-lg font-bold ${entry.delta > 0 ? 'text-green-500' : 'text-red-400'}`}>
                     {entry.delta > 0 ? '+' : ''}{entry.delta} pts
                   </span>
                 </div>

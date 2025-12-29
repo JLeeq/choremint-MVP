@@ -425,8 +425,8 @@ export default function ChildCharacter() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#D5D95F]">
-        <div className="text-white text-lg">Loading...</div>
+      <div className="min-h-screen flex items-center justify-center bg-[#E6F7F2]">
+        <div className="text-gray-600 text-lg">Loading...</div>
       </div>
     );
   }
@@ -488,7 +488,7 @@ export default function ChildCharacter() {
           ))}
 
           {/* Progress Info Overlay */}
-          <div className="absolute top-4 left-4 right-4 bg-white/90 backdrop-blur-sm rounded-2xl p-3 shadow-lg">
+          <div className="absolute top-4 left-4 right-4 bg-white/95 backdrop-blur-sm rounded-3xl p-3 shadow-sm border border-white/50">
             <div className="flex items-center justify-between">
               <div>
                 <h2 className="text-base font-bold text-gray-800">
@@ -525,17 +525,17 @@ export default function ChildCharacter() {
           onClick={closePopup}
         >
           {/* Dark overlay background */}
-          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
+          <div className="absolute inset-0 bg-black/30 backdrop-blur-sm" />
           
           {/* Popup content */}
           <div 
-            className="relative bg-white rounded-3xl shadow-2xl max-w-sm w-full p-6 transform transition-all"
+            className="relative bg-white rounded-3xl shadow-lg max-w-sm w-full p-6 transform transition-all border border-white/50"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Close button (X) */}
             <button
               onClick={closePopup}
-              className="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 transition-colors text-gray-600 hover:text-gray-800"
+              className="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full bg-[#E6F7F2] hover:bg-[#D4F4E8] transition-colors text-gray-600 hover:text-gray-800"
             >
               <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                 <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
@@ -564,7 +564,7 @@ export default function ChildCharacter() {
 
             {/* Level 5 special message */}
             {selectedCharacter.level === 5 && (
-              <p className="text-center text-yellow-600 font-semibold mb-2">
+              <p className="text-center text-[#FFB84D] font-semibold mb-2">
                 Max Evolution Achieved!
               </p>
             )}
@@ -578,7 +578,7 @@ export default function ChildCharacter() {
             <button
               onClick={handleDownload}
               disabled={isGeneratingImage}
-              className="w-full py-3 bg-gradient-to-r from-[#5CE1C6] to-[#4ECDC4] text-white rounded-xl font-bold text-lg shadow-lg hover:shadow-xl transform hover:scale-[1.02] transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full py-3 bg-gradient-to-r from-[#5CE1C6] to-[#4ECDC4] text-white rounded-xl font-bold text-lg shadow-sm hover:shadow-md transform hover:scale-[1.02] transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isGeneratingImage ? (
                 <>

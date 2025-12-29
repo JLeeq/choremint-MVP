@@ -248,17 +248,17 @@ export default function ChildUpload() {
 
   if (!childSession) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-white pb-20">
+      <div className="min-h-screen flex items-center justify-center bg-[#E6F7F2] pb-20">
         <p className="text-gray-600">Loading...</p>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-white pb-20">
+    <div className="min-h-screen bg-[#E6F7F2] pb-20">
       <div className="max-w-md w-full mx-auto p-4">
         {/* Header */}
-        <div className="bg-white rounded-3xl shadow-lg p-6 mb-4">
+        <div className="bg-white rounded-3xl shadow-sm p-6 mb-4 border border-white/50">
           <div className="flex items-center justify-between mb-2">
             <h1 className="text-2xl font-bold text-gray-800">
               {chore ? chore.title : 'Photo Upload'}
@@ -276,7 +276,7 @@ export default function ChildUpload() {
 
         {/* 집안일 단계 표시 */}
         {chore && chore.steps && chore.steps.length > 0 && (
-          <div className="bg-white rounded-3xl shadow-lg p-6 mb-4">
+          <div className="bg-white rounded-3xl shadow-sm p-6 mb-4 border border-white/50">
             <h2 className="text-lg font-bold text-gray-800 mb-4">How to do it:</h2>
             <div className="space-y-3">
               {chore.steps.map((step) => {
@@ -284,10 +284,10 @@ export default function ChildUpload() {
                 return (
                   <label
                     key={step.order}
-                    className={`flex items-center gap-3 p-3 rounded-lg cursor-pointer transition-colors ${
+                    className={`flex items-center gap-3 p-3 rounded-xl cursor-pointer transition-colors ${
                       isCompleted
-                        ? 'bg-green-50 border-2 border-green-200'
-                        : 'bg-gray-50 border-2 border-gray-200 hover:bg-gray-100'
+                        ? 'bg-[#D4F4E8] border-2 border-[#5CE1C6]'
+                        : 'bg-[#E6F7F2] border-2 border-gray-200 hover:bg-[#D4F4E8]'
                     }`}
                   >
                     <input
@@ -308,7 +308,7 @@ export default function ChildUpload() {
 
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Photo Upload Card */}
-          <div className="bg-white rounded-2xl p-5 shadow-md border-2 border-[#5CE1C6]/30">
+          <div className="bg-white rounded-3xl p-5 shadow-sm border border-white/50">
             <label className="block text-sm font-semibold text-gray-700 mb-3">
               Select Photo
             </label>
@@ -318,14 +318,14 @@ export default function ChildUpload() {
               <button
                 type="button"
                 onClick={handleOpenCamera}
-                className="flex-1 px-4 py-3 bg-[#5CE1C6] text-white rounded-xl hover:bg-[#4BC9B0] transition-colors font-semibold flex items-center justify-center gap-2"
+                className="flex-1 px-4 py-3 bg-gradient-to-r from-[#5CE1C6] to-[#4ECDC4] text-white rounded-xl hover:from-[#4BC9B0] hover:to-[#3DB8A8] transition-colors font-semibold flex items-center justify-center gap-2 shadow-sm"
               >
                 <Icon name="camera" size={20} />
-                카메라로 촬영
+                Take a Photo
               </button>
-              <label className="flex-1 px-4 py-3 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 transition-colors font-semibold flex items-center justify-center gap-2 cursor-pointer">
+              <label className="flex-1 px-4 py-3 bg-white text-gray-700 rounded-xl hover:bg-[#E6F7F2] transition-colors font-semibold flex items-center justify-center gap-2 cursor-pointer border border-gray-200 shadow-sm">
                 <Icon name="plus" size={20} />
-                갤러리에서 선택
+                Choose from Gallery
                 <input
                   type="file"
                   accept="image/*"
@@ -381,7 +381,7 @@ export default function ChildUpload() {
 
           {/* Preview Card */}
           {preview && (
-            <div className="bg-gray-50 rounded-2xl p-4 shadow-md border-2 border-gray-100">
+            <div className="bg-white rounded-3xl p-4 shadow-sm border border-white/50">
               <p className="text-sm font-semibold text-gray-700 mb-2">Preview</p>
               <img
                 src={preview}
@@ -393,8 +393,8 @@ export default function ChildUpload() {
 
           {/* Error Message */}
           {error && (
-            <div className="bg-red-50 border-2 border-red-200 rounded-xl p-4">
-              <p className="text-sm text-red-700 font-medium">{error}</p>
+            <div className="bg-red-50 border border-red-200 rounded-xl p-4">
+              <p className="text-sm text-red-600 font-medium">{error}</p>
             </div>
           )}
 
