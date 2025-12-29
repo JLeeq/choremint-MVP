@@ -9,7 +9,6 @@ export default function ParentTabNav() {
     { path: '/parent/approvals', label: 'Pending', iconName: 'check' },
     { path: '/parent/chores', label: 'Chores', iconName: 'chore' },
     { path: '/parent/rewards', label: 'Rewards', iconName: 'gift' },
-    { path: '/parent/profile', label: 'Settings', iconName: 'profile' },
   ];
 
   return (

@@ -48,6 +48,8 @@ export default function ChildToday() {
   const [_earnedPoints, setEarnedPoints] = useState(0);
   const [currentGoalNumber, setCurrentGoalNumber] = useState(1);
   const [characterSlotLevel, setCharacterSlotLevel] = useState(1);
+  const [showSettingsModal, setShowSettingsModal] = useState(false);
+  const [uploading, setUploading] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -180,12 +182,36 @@ export default function ChildToday() {
       )
       .subscribe();
 
+    // Subscribe to children table updates (포인트 실시간 갱신) - for settings modal
+    const childrenChannel = supabase
+      .channel('child-profile-points-updates')
+      .on(
+        'postgres_changes',
+        {
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'children',
+          filter: `id=eq.${parsedSession.childId}`,
+        },
+        (payload) => {
+          console.log('Child points updated:', payload);
+          // 포인트가 업데이트되면 세션과 상태 업데이트
+          if (payload.new.points !== undefined) {
+            const updatedSession = { ...parsedSession, points: payload.new.points };
+            localStorage.setItem('child_session', JSON.stringify(updatedSession));
+            setChildSession(updatedSession);
+          }
+        }
+      )
+      .subscribe();
+
     return () => {
       supabase.removeChannel(assignmentsChannel);
       supabase.removeChannel(submissionsChannel);
       supabase.removeChannel(pointsLedgerChannel);
       supabase.removeChannel(characterSlotsChannel);
       supabase.removeChannel(progressTrackerChannel);
+      supabase.removeChannel(childrenChannel);
     };
   }, [navigate]);
 
@@ -435,6 +461,92 @@ export default function ChildToday() {
     return diffDays;
   };
 
+  const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    try {
+      const file = e.target.files?.[0];
+      if (!file || !childSession) return;
+
+      // Validate file type
+      if (!file.type.startsWith('image/')) {
+        alert('Please select an image file.');
+        return;
+      }
+
+      // Validate file size (max 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        alert('Image size should be less than 5MB.');
+        return;
+      }
+
+      setUploading(true);
+
+      // Upload to Supabase Storage
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${childSession.childId}-${Date.now()}.${fileExt}`;
+      const filePath = `child-avatars/${fileName}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from('avatars')
+        .upload(filePath, file, {
+          cacheControl: '3600',
+          upsert: false,
+        });
+
+      if (uploadError) {
+        console.error('Storage upload error:', uploadError);
+        throw new Error(`Upload failed: ${uploadError.message}`);
+      }
+
+      // Get public URL
+      const { data: { publicUrl } } = supabase.storage
+        .from('avatars')
+        .getPublicUrl(filePath);
+
+      // Update child's avatar_url
+      const { error: updateError } = await supabase
+        .from('children')
+        .update({ avatar_url: publicUrl })
+        .eq('id', childSession.childId);
+
+      if (updateError) {
+        console.error('Database update error:', updateError);
+        throw new Error(`Failed to update profile: ${updateError.message}`);
+      }
+
+      setAvatarUrl(publicUrl);
+      alert('Profile picture updated!');
+    } catch (error: any) {
+      console.error('Error uploading avatar:', error);
+      alert(error.message || 'Failed to upload image. Please try again.');
+    } finally {
+      setUploading(false);
+      // Reset input
+      e.target.value = '';
+    }
+  };
+
+  const handleLogout = async () => {
+    try {
+      // Remove all Supabase channels
+      await supabase.removeAllChannels();
+      
+      // Clear child session from localStorage
+      localStorage.removeItem('child_session');
+      
+      // Clear all storage to be safe
+      localStorage.clear();
+      sessionStorage.clear();
+      
+      // Force navigation to login page
+      window.location.href = '/';
+    } catch (error) {
+      console.error('Logout error:', error);
+      // Force navigation even if there's an error
+      localStorage.removeItem('child_session');
+      window.location.href = '/';
+    }
+  };
+
   if (loading || !childSession) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-white pb-20">
@@ -545,25 +657,52 @@ export default function ChildToday() {
         <div className="space-y-4">
           {/* 헤더: 카드랑 같은 폭/인셋, 배경 없음 */}
           <div className="px-4">
-            <div className="flex items-center gap-3 mb-3">
-              {avatarUrl ? (
-                <div className="w-12 h-12 rounded-full border-2 border-[#5CE1C6] overflow-hidden bg-gradient-to-br from-orange-400 to-pink-400 flex-shrink-0">
-                  <img
-                    src={avatarUrl}
-                    alt={childSession.nickname}
-                    className="w-full h-full object-cover"
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-3">
+                {avatarUrl ? (
+                  <div className="w-12 h-12 rounded-full border-2 border-[#5CE1C6] overflow-hidden bg-gradient-to-br from-orange-400 to-pink-400 flex-shrink-0">
+                    <img
+                      src={avatarUrl}
+                      alt={childSession.nickname}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                ) : (
+                  <div className="w-12 h-12 rounded-full border-2 border-[#5CE1C6] overflow-hidden bg-gradient-to-br from-orange-400 to-pink-400 flex items-center justify-center flex-shrink-0">
+                    <span className="text-xl font-bold text-white">
+                      {childSession.nickname[0].toUpperCase()}
+                    </span>
+                  </div>
+                )}
+                <h1 className="text-2xl font-bold text-gray-800">
+                  Hi, {childSession.nickname} 👋
+                </h1>
+              </div>
+              <button
+                onClick={() => setShowSettingsModal(true)}
+                className="w-10 h-10 flex items-center justify-center text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-full transition-colors"
+                aria-label="Settings"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="w-6 h-6"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth={2}
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
                   />
-                </div>
-              ) : (
-                <div className="w-12 h-12 rounded-full border-2 border-[#5CE1C6] overflow-hidden bg-gradient-to-br from-orange-400 to-pink-400 flex items-center justify-center flex-shrink-0">
-                  <span className="text-xl font-bold text-white">
-                    {childSession.nickname[0].toUpperCase()}
-                  </span>
-                </div>
-              )}
-              <h1 className="text-2xl font-bold text-gray-800">
-                Hi, {childSession.nickname} 👋
-              </h1>
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                  />
+                </svg>
+              </button>
             </div>
             <p className="text-gray-600 text-sm mb-7">
               Complete today&apos;s chores!
@@ -728,6 +867,116 @@ export default function ChildToday() {
               >
                 📸 Upload Photo
               </button>
+            </div>
+          </div>
+        )}
+
+        {/* Settings Modal */}
+        {showSettingsModal && (
+          <div 
+            className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+            onClick={() => setShowSettingsModal(false)}
+          >
+            <div 
+              className="bg-white rounded-3xl shadow-xl max-w-md w-full p-6 max-h-[90vh] overflow-y-auto"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Header */}
+              <div className="flex justify-between items-center mb-6">
+                <h1 className="text-2xl font-bold text-gray-800">Profile</h1>
+                <button
+                  onClick={() => setShowSettingsModal(false)}
+                  className="w-10 h-10 flex items-center justify-center text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-full transition-colors"
+                  aria-label="Close"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="w-6 h-6"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    strokeWidth={2}
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M6 18L18 6M6 6l12 12"
+                    />
+                  </svg>
+                </button>
+              </div>
+
+              <div className="space-y-6">
+                {/* Avatar Section */}
+                <div className="text-center">
+                  <div className="relative w-24 h-24 mx-auto mb-4">
+                    <div className="w-24 h-24 rounded-full overflow-hidden border-2 border-[#5CE1C6] bg-gradient-to-br from-orange-400 to-pink-400 flex items-center justify-center">
+                      {avatarUrl ? (
+                        <img
+                          src={avatarUrl}
+                          alt={childSession?.nickname || ''}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <span className="text-4xl font-bold text-white">
+                          {childSession?.nickname[0].toUpperCase() || ''}
+                        </span>
+                      )}
+                    </div>
+                    <label className="absolute bottom-0 right-0 w-8 h-8 bg-[#5CE1C6] rounded-full flex items-center justify-center cursor-pointer hover:bg-[#4BC9B0] transition-colors shadow-lg">
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleAvatarUpload}
+                        disabled={uploading}
+                        className="hidden"
+                      />
+                      <svg
+                        className="w-5 h-5 text-white"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"
+                        />
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"
+                        />
+                      </svg>
+                    </label>
+                  </div>
+                  <h2 className="text-xl font-bold text-gray-800">{childSession?.nickname}</h2>
+                  {uploading && (
+                    <p className="text-sm text-gray-500 mt-2">Uploading...</p>
+                  )}
+                </div>
+
+                {/* Points Display */}
+                <div className="bg-gray-50 rounded-lg p-4">
+                  <div className="flex justify-between items-center mb-2">
+                    <span className="text-gray-600">Total Points</span>
+                    <span className="text-2xl font-bold text-blue-600 flex items-center gap-1">
+                      <Icon name="star" size={20} className="md:w-6 md:h-6" />
+                      {childSession?.points || 0} pts
+                    </span>
+                  </div>
+                </div>
+
+                {/* Logout Button */}
+                <button
+                  onClick={handleLogout}
+                  className="w-full px-6 py-3 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors font-bold"
+                >
+                  Logout
+                </button>
+              </div>
             </div>
           </div>
         )}

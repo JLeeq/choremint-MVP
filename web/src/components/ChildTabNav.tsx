@@ -9,7 +9,6 @@ export default function ChildTabNav() {
     { path: '/child/upload', label: 'Upload', iconName: 'camera' },
     { path: '/child/character', label: 'Character', iconName: 'star' },
     { path: '/child/rewards', label: 'Rewards', iconName: 'gift' },
-    { path: '/child/profile', label: 'Settings', iconName: 'profile' },
   ];
 
   return (

@@ -42,6 +42,10 @@ export default function ParentHome() {
   const [savingChild, setSavingChild] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [deletingChild, setDeletingChild] = useState(false);
+  const [showSettingsModal, setShowSettingsModal] = useState(false);
+  const [settingsFamilyName, setSettingsFamilyName] = useState('');
+  const [notifOptIn, setNotifOptIn] = useState(true);
+  const [savingSettings, setSavingSettings] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -898,18 +902,245 @@ export default function ParentHome() {
         </div>
       )}
 
+      {/* Settings Modal */}
+      {showSettingsModal && (
+        <div 
+          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+          onClick={() => setShowSettingsModal(false)}
+        >
+          <div 
+            className="bg-white rounded-3xl shadow-xl max-w-md w-full p-6 max-h-[90vh] overflow-y-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Header */}
+            <div className="flex justify-between items-center mb-6">
+              <h1 className="text-xl sm:text-2xl font-bold text-gray-800">Profile</h1>
+              <button
+                onClick={() => setShowSettingsModal(false)}
+                className="w-10 h-10 flex items-center justify-center text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-full transition-colors"
+                aria-label="Close"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="w-6 h-6"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth={2}
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                </svg>
+              </button>
+            </div>
+
+            <div className="space-y-6">
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  Family Name
+                </label>
+                <input
+                  type="text"
+                  value={settingsFamilyName}
+                  onChange={(e) => setSettingsFamilyName(e.target.value)}
+                  placeholder="Enter family name"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#F8D79F]"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  Family Code
+                </label>
+                <div className="flex items-center gap-2">
+                  <input
+                    type="text"
+                    value={family?.family_code || ''}
+                    readOnly
+                    className="flex-1 px-4 py-2 bg-gray-50 border border-gray-300 rounded-lg font-mono"
+                  />
+                  <button
+                    onClick={() => {
+                      navigator.clipboard.writeText(family?.family_code || '');
+                      alert('Family code copied!');
+                    }}
+                    className="px-4 py-2 bg-[#B2F5EA] text-gray-800 rounded-lg hover:bg-[#A8E6CF] transition-colors"
+                  >
+                    Copy
+                  </button>
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                <div>
+                  <p className="font-semibold text-gray-800">Notifications</p>
+                  <p className="text-sm text-gray-600">Receive push notifications?</p>
+                </div>
+                <label className="relative inline-flex items-center cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={notifOptIn}
+                    onChange={(e) => setNotifOptIn(e.target.checked)}
+                    className="sr-only peer"
+                  />
+                  <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[#F8D79F]/30 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#F8D79F]"></div>
+                </label>
+              </div>
+
+              <div className="flex gap-4">
+                <button
+                  onClick={async () => {
+                    setSavingSettings(true);
+                    try {
+                      const { data: { session } } = await supabase.auth.getSession();
+                      if (!session) throw new Error('Login required.');
+
+                      // Update family_name in families table
+                      if (family) {
+                        const { error: familyError } = await supabase
+                          .from('families')
+                          .update({
+                            family_name: settingsFamilyName,
+                          })
+                          .eq('id', family.id);
+
+                        if (familyError) throw familyError;
+                      }
+
+                      // Update profile
+                      const { error } = await supabase
+                        .from('profiles')
+                        .update({
+                          name: settingsFamilyName,
+                          notif_opt_in: notifOptIn,
+                          updated_at: new Date().toISOString(),
+                        })
+                        .eq('user_id', session.user.id);
+
+                      if (error) throw error;
+
+                      // Update local state
+                      if (family) {
+                        setFamily({ ...family, family_name: settingsFamilyName });
+                      }
+                      setParentName(settingsFamilyName);
+
+                      alert('Profile saved!');
+                      setShowSettingsModal(false);
+                    } catch (error: any) {
+                      alert(error.message || 'Error occurred while saving.');
+                    } finally {
+                      setSavingSettings(false);
+                    }
+                  }}
+                  disabled={savingSettings}
+                  className="flex-1 px-6 py-3 bg-[#B2F5EA] text-gray-800 rounded-lg hover:bg-[#A8E6CF] transition-colors disabled:opacity-50 font-bold"
+                >
+                  Save
+                </button>
+                <button
+                  onClick={async () => {
+                    try {
+                      // Remove all Supabase channels
+                      await supabase.removeAllChannels();
+                      
+                      // Sign out from Supabase
+                      const { error } = await supabase.auth.signOut();
+                      if (error) {
+                        console.error('Logout error:', error);
+                      }
+                      
+                      // Clear any local storage
+                      localStorage.clear();
+                      sessionStorage.clear();
+                      
+                      // Force navigation to login page
+                      window.location.href = '/';
+                    } catch (error) {
+                      console.error('Logout error:', error);
+                      // Force navigation even if there's an error
+                      window.location.href = '/';
+                    }
+                  }}
+                  className="flex-1 px-6 py-3 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors font-bold"
+                >
+                  Logout
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="max-w-4xl mx-auto px-4 pt-6 sm:pt-8 pb-6">
         {/* Welcome Header */}
         {/* DESIGN PATTERN: Page Header - 재사용 가능한 헤더 스타일
             - 큰 제목 (text-2xl sm:text-3xl) + 작은 서브텍스트 구조
             - 크림 배경 위에서 따뜻한 느낌 유지 */}
         <div className="mb-6">
-          <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-1">
-            Hi, {parentName || 'Family'}!
-          </h1>
-          <p className="text-gray-600 text-sm sm:text-base">
-            Check today&apos;s status!
-          </p>
+          <div className="flex items-start justify-between">
+            <div>
+              <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-1">
+                Hi, {parentName || 'Family'}!
+              </h1>
+              <p className="text-gray-600 text-sm sm:text-base">
+                Check today&apos;s status!
+              </p>
+            </div>
+            <button
+              onClick={() => {
+                // Load settings data when opening modal
+                const loadSettingsData = async () => {
+                  const { data: { session } } = await supabase.auth.getSession();
+                  if (!session) return;
+
+                  try {
+                    const { data: profileData } = await supabase
+                      .from('profiles')
+                      .select('*')
+                      .eq('user_id', session.user.id)
+                      .single();
+
+                    if (profileData) {
+                      setSettingsFamilyName(profileData.name || family?.family_name || '');
+                      setNotifOptIn(profileData.notif_opt_in ?? true);
+                    } else if (family?.family_name) {
+                      setSettingsFamilyName(family.family_name);
+                    }
+                  } catch (error) {
+                    console.error('Error loading settings data:', error);
+                  }
+                };
+                loadSettingsData();
+                setShowSettingsModal(true);
+              }}
+              className="w-10 h-10 flex items-center justify-center text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-full transition-colors flex-shrink-0"
+              aria-label="Settings"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="w-6 h-6"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth={2}
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
+                />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                />
+              </svg>
+            </button>
+          </div>
         </div>
 
         {/* Today Status Section - 흰색 rounded rectangle 배경 카드 */}

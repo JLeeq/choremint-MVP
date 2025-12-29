@@ -319,7 +319,7 @@ export default function ParentApprovals() {
         <div className="flex gap-2 mb-4 sm:mb-6">
           <button 
             onClick={() => setActiveTab('to-approve')}
-            className={`px-4 sm:px-6 py-1.5 sm:py-2 rounded-full font-semibold text-sm sm:text-base transition-colors ${
+            className={`px-3 sm:px-4 py-1 sm:py-1.5 rounded-full font-medium text-xs sm:text-sm transition-colors ${
               activeTab === 'to-approve'
                 ? 'bg-[#1E3A8A] text-white'
                 : 'bg-[#B2F5EA] text-gray-700 hover:bg-[#A8E6CF]'
@@ -329,7 +329,7 @@ export default function ParentApprovals() {
           </button>
           <button 
             onClick={() => setActiveTab('incomplete')}
-            className={`px-4 sm:px-6 py-1.5 sm:py-2 rounded-full font-semibold text-sm sm:text-base transition-colors ${
+            className={`px-3 sm:px-4 py-1 sm:py-1.5 rounded-full font-medium text-xs sm:text-sm transition-colors ${
               activeTab === 'incomplete'
                 ? 'bg-[#1E3A8A] text-white'
                 : 'bg-[#B2F5EA] text-gray-700 hover:bg-[#A8E6CF]'
@@ -339,7 +339,7 @@ export default function ParentApprovals() {
           </button>
           <button 
             onClick={() => setActiveTab('completed')}
-            className={`px-4 sm:px-6 py-1.5 sm:py-2 rounded-full font-semibold text-sm sm:text-base transition-colors ${
+            className={`px-3 sm:px-4 py-1 sm:py-1.5 rounded-full font-medium text-xs sm:text-sm transition-colors ${
               activeTab === 'completed'
                 ? 'bg-[#1E3A8A] text-white'
                 : 'bg-[#B2F5EA] text-gray-700 hover:bg-[#A8E6CF]'
