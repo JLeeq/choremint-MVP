@@ -389,7 +389,7 @@ export default function ChildToday() {
           </div>
 
           {/* Character Section */}
-          <div className="bg-gradient-to-br from-[#E6F9F5] to-[#D0F4ED] rounded-3xl shadow-xl p-6">
+          <div className="bg-[#ADFF2F] rounded-3xl shadow-xl p-6">
           <div className="flex items-center justify-between mb-4">
             <div>
               <h2 className="text-lg font-bold text-gray-800 mb-1">My Character</h2>
