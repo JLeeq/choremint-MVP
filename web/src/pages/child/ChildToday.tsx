@@ -397,11 +397,7 @@ export default function ChildToday() {
   };
 
   const calculateLevel = (points: number, goalPoints: number | null) => {
-    // 레벨 계산: 100포인트마다 레벨 1 증가
-    const newLevel = Math.floor(points / 100) + 1;
-    // setLevel은 캐릭터 슬롯 레벨로 덮어쓰기 때문에 주석 처리
-    // setLevel(newLevel);
-
+    // 레벨은 캐릭터 슬롯 레벨로 덮어쓰기 때문에 여기서는 계산하지 않음
     // 캐릭터 기분을 목표치 대비 퍼센트로 결정
     if (goalPoints && goalPoints > 0) {
       const progressPercent = (points / goalPoints) * 100;
