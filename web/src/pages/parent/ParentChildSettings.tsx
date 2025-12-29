@@ -198,7 +198,7 @@ export default function ParentChildSettings() {
               <button
                 onClick={handleSave}
                 disabled={saving}
-                className="flex-1 px-6 py-3 bg-[#F8D79F] text-gray-800 rounded-lg hover:bg-[#F6D08A] transition-colors disabled:opacity-50 font-bold"
+                className="flex-1 px-6 py-3 bg-[#B2F5EA] text-gray-800 rounded-lg hover:bg-[#A8E6CF] transition-colors disabled:opacity-50 font-bold"
               >
                 {saving ? 'Saving...' : 'Save'}
               </button>

@@ -696,7 +696,7 @@ export default function ParentHome() {
                 <button
                   onClick={handleAddChild}
                   disabled={addingChild || !newNickname || !newPin}
-                  className="flex-1 px-4 py-2 bg-[#F8D79F] text-gray-800 rounded-lg hover:bg-[#F6D08A] transition-colors disabled:opacity-50 font-medium min-h-[44px]"
+                  className="flex-1 px-4 py-2 bg-[#1E3A8A] text-white rounded-lg hover:bg-[#2563EB] transition-colors disabled:opacity-50 font-medium min-h-[44px]"
                 >
                   {addingChild ? 'Adding...' : 'Add'}
                 </button>
@@ -989,7 +989,7 @@ export default function ParentHome() {
                 - border 스타일로 Primary 버튼처럼 튀지 않게 */}
             <button
               onClick={() => setShowAddChild(true)}
-              className="px-3 py-1.5 border border-[#F8D79F] text-[#F8D79F] rounded-lg hover:bg-[#F8D79F]/20 transition-colors text-xs font-medium flex items-center gap-1.5"
+              className="px-3 py-1.5 border border-[#1E3A8A] text-[#1E3A8A] rounded-lg hover:bg-[#1E3A8A]/20 transition-colors text-xs font-medium flex items-center gap-1.5"
             >
               <svg xmlns="http://www.w3.org/2000/svg" className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                 <line x1="12" y1="5" x2="12" y2="19"></line>
@@ -1060,11 +1060,11 @@ export default function ParentHome() {
                       )}
                       {/* DESIGN PATTERN: Progress Bar - 재사용 가능한 진행바
                           - bg-gray-200 rounded-full: 배경 바
-                          - bg-[#F8D79F]: 진행률 표시 (오렌지색)
+                          - bg-[#1E3A8A]: 진행률 표시 (남색)
                           - transition-all duration-300: 부드러운 애니메이션 */}
                       <div className="w-full bg-gray-200 rounded-full h-2.5">
                         <div
-                          className="bg-[#F8D79F] h-2.5 rounded-full transition-all duration-300"
+                          className="bg-[#1E3A8A] h-2.5 rounded-full transition-all duration-300"
                           style={{ width: `${progress}%` }}
                         />
                       </div>

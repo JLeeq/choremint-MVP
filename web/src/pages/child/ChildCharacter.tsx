@@ -425,14 +425,14 @@ export default function ChildCharacter() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#BCBF54]">
+      <div className="min-h-screen flex items-center justify-center bg-[#D5D95F]">
         <div className="text-white text-lg">Loading...</div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen relative overflow-hidden bg-[#BCBF54]">
+    <div className="min-h-screen relative overflow-hidden bg-[#D5D95F]">
       {/* Hidden canvas for image generation */}
       <canvas ref={canvasRef} style={{ display: 'none' }} />
 
