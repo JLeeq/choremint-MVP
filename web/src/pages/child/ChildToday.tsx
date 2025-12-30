@@ -874,7 +874,7 @@ export default function ChildToday() {
         {/* Settings Modal */}
         {showSettingsModal && (
           <div 
-            className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50 p-4"
+            className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
             onClick={() => setShowSettingsModal(false)}
           >
             <div 
@@ -981,7 +981,7 @@ export default function ChildToday() {
                           d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"
                         />
                       </svg>
-                      <span className="font-semibold text-gray-800">프로필 사진 설정하기</span>
+                      <span className="font-semibold text-gray-800">Choose Profile Photo</span>
                     </div>
                   </div>
                   <input
