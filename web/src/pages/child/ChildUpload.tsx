@@ -258,20 +258,18 @@ export default function ChildUpload() {
     <div className="min-h-screen bg-[#E6F7F2] pb-20">
       <div className="max-w-md w-full mx-auto p-4">
         {/* Header */}
-        <div className="bg-white rounded-3xl shadow-sm p-6 mb-4 border border-white/50">
-          <div className="flex items-center justify-between mb-2">
-            <h1 className="text-2xl font-bold text-gray-800">
-              {chore ? chore.title : 'Photo Upload'}
-            </h1>
-            {chore && (
-              <div className="bg-green-100 rounded-full px-4 py-2 flex items-center gap-1">
-                <Icon name="star" size={16} />
-                <span className="text-green-700 font-semibold text-sm">
-                  {chore.points} pts
-                </span>
-              </div>
-            )}
-          </div>
+        <div className="flex items-center justify-between mb-4">
+          <h1 className="text-2xl font-bold text-gray-800">
+            {chore ? chore.title : 'Photo Upload'}
+          </h1>
+          {chore && (
+            <div className="bg-green-100 rounded-full px-4 py-2 flex items-center gap-1">
+              <Icon name="star" size={16} />
+              <span className="text-green-700 font-semibold text-sm">
+                {chore.points} pts
+              </span>
+            </div>
+          )}
         </div>
 
         {/* 집안일 단계 표시 */}
@@ -320,11 +318,11 @@ export default function ChildUpload() {
                 onClick={handleOpenCamera}
                 className="flex-1 px-4 py-3 bg-gradient-to-r from-[#5CE1C6] to-[#4ECDC4] text-white rounded-xl hover:from-[#4BC9B0] hover:to-[#3DB8A8] transition-colors font-semibold flex items-center justify-center gap-2 shadow-sm"
               >
-                <Icon name="camera" size={20} />
+                <Icon name="camera" size={20} color="#000000" />
                 Take a Photo
               </button>
               <label className="flex-1 px-4 py-3 bg-white text-gray-700 rounded-xl hover:bg-[#E6F7F2] transition-colors font-semibold flex items-center justify-center gap-2 cursor-pointer border border-gray-200 shadow-sm">
-                <Icon name="plus" size={20} />
+                <Icon name="plus" size={24} color="#000000" />
                 Choose from Gallery
                 <input
                   type="file"
@@ -402,7 +400,7 @@ export default function ChildUpload() {
           <button
             type="submit"
             disabled={loading || !selectedFile}
-            className="w-full px-6 py-4 bg-gradient-to-r from-orange-400 to-pink-400 text-white rounded-2xl hover:from-orange-500 hover:to-pink-500 transition-all disabled:opacity-50 disabled:cursor-not-allowed font-bold text-lg shadow-lg hover:shadow-xl transform hover:scale-[1.02] active:scale-[0.98]"
+            className="w-full px-6 py-4 bg-[#3B82F6] text-white rounded-2xl hover:bg-[#2563EB] transition-all disabled:opacity-50 disabled:cursor-not-allowed font-bold text-lg shadow-lg hover:shadow-xl transform hover:scale-[1.02] active:scale-[0.98]"
           >
             {loading ? (
               <span className="flex items-center justify-center gap-2">

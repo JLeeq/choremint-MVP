@@ -173,37 +173,39 @@ export default function ChildRewards() {
     <div className="min-h-screen bg-[#E6F7F2] pb-20">
       <div className="max-w-md mx-auto p-4">
         {/* Points Summary */}
-        <div className="bg-white rounded-3xl shadow-sm p-6 mb-4 border border-white/50">
+        <div className="bg-white rounded-3xl shadow-sm p-6 mb-6 border border-white/50">
           <div className="text-center">
-            <h1 className="text-3xl font-bold text-gray-800 mb-2 flex items-center justify-center gap-2">
-              <Icon name="star" size={24} className="md:w-8 md:h-8" />
+            <h1 className="text-5xl font-extrabold text-[#FFB84D] mb-2 flex items-center justify-center gap-3">
+              <Icon name="star" size={32} color="#FFB84D" className="md:w-10 md:h-10" />
               {childSession.points} pts
             </h1>
-            <p className="text-gray-600">Total Points</p>
+            <p className="text-gray-600 text-base mb-1">Total Points</p>
+            <p className="text-sm text-[#FFB84D] font-semibold">Keep going! 🚀</p>
           </div>
         </div>
 
         {/* Goal History */}
         {goalHistory.length > 0 && (
-          <div className="bg-white rounded-3xl shadow-sm p-6 mb-4 border border-white/50">
+          <div className="bg-white rounded-3xl shadow-sm p-6 mb-6 border border-white/50">
             <h2 className="text-xl font-bold text-gray-800 mb-4">Goal History</h2>
             <div className="space-y-3">
               {goalHistory.map((goal) => (
                 <div key={goal.id} className="flex justify-between items-center p-4 bg-[#E6F7F2] rounded-xl">
-                  <div>
-                    <p className="font-medium text-gray-800">
-                      Goal Achieved! 🎉
+                  <div className="flex-1">
+                    <p className="font-semibold text-gray-800 text-base flex items-center gap-2">
+                      <span className="text-2xl">🎉</span>
+                      Goal Achieved!
                     </p>
-                    <p className="text-xs text-gray-500">
+                    <p className="text-xs text-gray-400 mt-1">
                       {new Date(goal.achieved_at).toLocaleDateString()}
                     </p>
                     {goal.reward && (
-                      <p className="text-sm text-gray-600 mt-1">
+                      <p className="text-sm text-gray-700 mt-2 font-medium">
                         🎁 {goal.reward}
                       </p>
                     )}
                   </div>
-                  <span className="text-lg font-bold text-[#5CE1C6]">
+                  <span className="text-2xl font-extrabold text-[#FFB84D] ml-4">
                     {goal.goal_points} pts
                   </span>
                 </div>
@@ -219,23 +221,40 @@ export default function ChildRewards() {
             <p className="text-gray-500 text-center py-8">No points history yet.</p>
           ) : (
             <div className="space-y-3">
-              {pointsHistory.map((entry) => (
-                <div key={entry.id} className="flex justify-between items-center p-4 bg-[#E6F7F2] rounded-xl">
-                  <div>
-                    <p className="font-medium text-gray-800">
-                      {entry.reason === 'chore_approved' ? 'Chore Completed' : 
-                       entry.reason === 'goal_achieved_reset' ? 'Goal Achieved (Reset)' :
-                       entry.reason}
-                    </p>
-                    <p className="text-xs text-gray-500">
-                      {new Date(entry.created_at).toLocaleString()}
-                    </p>
+              {pointsHistory.map((entry) => {
+                // Determine icon based on reason
+                const getIcon = () => {
+                  if (entry.reason === 'chore_approved') return '✅';
+                  if (entry.reason === 'goal_achieved_reset') return '🎉';
+                  if (entry.delta < 0) return '🔄';
+                  return '✅';
+                };
+                
+                const getLabel = () => {
+                  if (entry.reason === 'chore_approved') return 'Chore Completed';
+                  if (entry.reason === 'goal_achieved_reset') return 'Goal Achieved';
+                  return entry.reason;
+                };
+                
+                return (
+                  <div key={entry.id} className="flex justify-between items-center p-4 bg-[#E6F7F2] rounded-xl">
+                    <div className="flex items-center gap-3 flex-1">
+                      <span className="text-2xl flex-shrink-0">{getIcon()}</span>
+                      <div>
+                        <p className="font-medium text-gray-800">
+                          {getLabel()}
+                        </p>
+                        <p className="text-xs text-gray-400 mt-0.5">
+                          {new Date(entry.created_at).toLocaleString()}
+                        </p>
+                      </div>
+                    </div>
+                    <span className={`text-lg font-bold ${entry.delta > 0 ? 'text-green-500' : 'text-red-400'}`}>
+                      {entry.delta > 0 ? '+' : ''}{entry.delta} pts
+                    </span>
                   </div>
-                  <span className={`text-lg font-bold ${entry.delta > 0 ? 'text-green-500' : 'text-red-400'}`}>
-                    {entry.delta > 0 ? '+' : ''}{entry.delta} pts
-                  </span>
-                </div>
-              ))}
+                );
+              })}
             </div>
           )}
         </div>

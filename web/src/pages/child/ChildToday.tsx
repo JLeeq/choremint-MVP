@@ -958,16 +958,40 @@ export default function ChildToday() {
                   )}
                 </div>
 
-                {/* Points Display */}
-                <div className="bg-[#E6F7F2] rounded-xl p-4">
-                  <div className="flex justify-between items-center mb-2">
-                    <span className="text-gray-600">Total Points</span>
-                    <span className="text-2xl font-bold text-blue-600 flex items-center gap-1">
-                      <Icon name="star" size={20} className="md:w-6 md:h-6" />
-                      {childSession?.points || 0} pts
-                    </span>
+                {/* Profile Photo Setting Button */}
+                <label className="block">
+                  <div className="bg-[#E6F7F2] rounded-xl p-4 cursor-pointer hover:bg-[#D4F4E8] transition-colors">
+                    <div className="flex items-center justify-center gap-2">
+                      <svg
+                        className="w-5 h-5 text-gray-700"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"
+                        />
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"
+                        />
+                      </svg>
+                      <span className="font-semibold text-gray-800">프로필 사진 설정하기</span>
+                    </div>
                   </div>
-                </div>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleAvatarUpload}
+                    disabled={uploading}
+                    className="hidden"
+                  />
+                </label>
 
                 {/* Logout Button */}
                 <button
